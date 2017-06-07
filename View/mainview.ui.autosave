@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>960</height>
+    <width>960</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,22 +53,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1280</width>
-     <height>25</height>
+     <width>960</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
    <property name="font">
     <font>
-     <family>Microsoft YaHei UI</family>
-     <pointsize>10</pointsize>
+     <pointsize>18</pointsize>
     </font>
    </property>
    <attribute name="toolBarArea">

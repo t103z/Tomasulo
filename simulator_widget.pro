@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     utils.cpp \
     Model/Tomasulo.cpp \
     Model/Tomasulo/Ins.cpp \
-    ViewModel/viewmodel.cpp
+    ViewModel/viewmodel.cpp \
+    View/memtab.cpp
 
 HEADERS  += View/mainview.h \
     View/infotab.h \
@@ -44,10 +45,12 @@ HEADERS  += View/mainview.h \
     Model/Tomasulo/Mem.h \
     Model/Tomasulo/Register.h \
     Model/Tomasulo/ReservationStation.h \
-    ViewModel/viewmodel.h
+    ViewModel/viewmodel.h \
+    View/memtab.h
 
 FORMS    += View/mainview.ui \
-    View/infotab.ui
+    View/infotab.ui \
+    View/memtab.ui
 
 RESOURCES += \
     tomaresource.qrc
