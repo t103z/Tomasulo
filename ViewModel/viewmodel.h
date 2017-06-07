@@ -30,17 +30,26 @@ private:
 
     QStandardItemModel &m_instModel;    // 指令序列
     QStandardItemModel &m_rsModel;      // 保留站
+    QStandardItemModel &m_regsModel;    // 寄存器信息
+    QStandardItemModel &m_loadModel;      // Load缓冲
+    QStandardItemModel &m_storeModel;      // Store缓冲
 
     explicit ViewModel(const ViewModel& rhs) = delete;
     ViewModel& operator= (const ViewModel& rhs) = delete;
     void initModel();
     void initInstModel();
     void initRsModel();
+    void initRegsModel();
+    void initLoadModel();
+    void initStoreModel();
     void ConnectActions();
     void updateView();
     void updateInst();
     void updateStatus();
     void updateRS();
+    void updateRegs();
+    void updateLoad();
+    void updateStore();
 };
 
 

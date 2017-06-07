@@ -7,6 +7,7 @@
 #include <QStandardItemModel>
 #include <QString>
 #include <QFile>
+#include <QDebug>
 
 /*********** checklist************
  * 1. 完成单向Model到View的映射   On-going
@@ -18,6 +19,10 @@ const int INIT_INST_ROWS = 5;
 const int INIT_INST_COLUMNS = 8;        // 指令 TODO: 最终几列？
 const int INIT_RS_ROWS = 5;
 const int INIT_RS_COLUMNS = 7;          // 保留站
+const int INIT_REGS_ROWS = 16;
+const int INIT_REGS_COLUMNS = 3;        // 寄存器信息
+const int INIT_LOAD_ROWS = 3;
+const int INIT_LOAD_COLUMNS = 4;        // Load/Store缓冲
 const int COL_OPR = 0;
 const int COL_OP1 = COL_OPR + 1;
 const int COL_OP2 = COL_OP1 + 1;
@@ -28,7 +33,11 @@ const int COL_ExFin = COL_ExSt + 1;
 const int COL_Wt = COL_ExFin + 1;
 
 inline void setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr) {
-    return m_instModel.setItem((r), (c), new QStandardItem(QString::fromStdString((stdStr))));
+    m_instModel.setData(m_instModel.index(r, c), QString::fromStdString(stdStr));
+}
+
+inline void setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr) {
+    m_instModel.setData(m_instModel.index(r, c), qStr);
 }
 
 ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, std::vector<Ins> &inss, Tomasulo &tomasulo) :
@@ -38,7 +47,10 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, std::vector<Ins> &ins
     m_inss(inss),
     m_tomasulo(tomasulo),
     m_instModel(*new QStandardItemModel(INIT_INST_ROWS, INIT_INST_COLUMNS, this)),
-    m_rsModel(*new QStandardItemModel(INIT_RS_ROWS, INIT_RS_COLUMNS, this))
+    m_rsModel(*new QStandardItemModel(INIT_RS_ROWS, INIT_RS_COLUMNS, this)),
+    m_regsModel(*new QStandardItemModel(INIT_REGS_ROWS, INIT_REGS_COLUMNS, this)),
+    m_loadModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this)),
+    m_storeModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this))
 {
     initModel();
     ConnectActions();
@@ -48,6 +60,9 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, std::vector<Ins> &ins
 void ViewModel::initModel() {
     initInstModel();
     initRsModel();
+    initRegsModel();
+    initLoadModel();
+    initStoreModel();
     updateView();
 }
 
@@ -74,6 +89,33 @@ void ViewModel::initRsModel() {
     m_infoTab.setRsTableModel(m_rsModel);
 }
 
+void ViewModel::initRegsModel() {
+    m_regsModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Name")));
+    m_regsModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Value")));
+    m_regsModel.setHorizontalHeaderItem(2, new QStandardItem(QString("RS")));
+    for (int i = 0; i < INIT_REGS_ROWS; ++i) {
+        m_regsModel.setItem(i, 0, new QStandardItem(QString("F%1").arg(i)));
+        m_regsModel.setItem(i, 1, new QStandardItem(QString("0")));
+    }
+    m_infoTab.setRegsTableModel(m_regsModel);
+}
+
+void ViewModel::initLoadModel() {
+    m_loadModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Time")));
+    m_loadModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Name")));
+    m_loadModel.setHorizontalHeaderItem(2, new QStandardItem(QString("Address")));
+    m_loadModel.setHorizontalHeaderItem(3, new QStandardItem(QString("Value")));
+    m_infoTab.setLoadTableModel(m_loadModel);
+}
+
+void ViewModel::initStoreModel() {
+    m_storeModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Time")));
+    m_storeModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Name")));
+    m_storeModel.setHorizontalHeaderItem(2, new QStandardItem(QString("Address")));
+    m_storeModel.setHorizontalHeaderItem(3, new QStandardItem(QString("Value")));
+    m_infoTab.setStoreTableModel(m_storeModel);
+}
+
 // 将所有action有关signal连接到slot
 void ViewModel::ConnectActions() {
     connect(&m_mainView, &MainView::NotifyLoadInst, this, &ViewModel::onNotifyLoadInst);
@@ -87,10 +129,18 @@ void ViewModel::updateView() {
     updateInst();
     updateStatus();
     updateRS();
+    updateRegs();
+    updateLoad();
+    updateStore();
 }
 
 void ViewModel::updateInst() {
-    int row = 0;
+    int row = m_instModel.rowCount();
+    while (row < m_tomasulo.inss.size()) {
+        m_instModel.setItem(m_instModel.rowCount(), 0, new QStandardItem(""));
+        row++;
+    }
+    row = 0;
     for (auto ins: m_tomasulo.inss) {
         setInstStr(m_instModel, row, COL_OPR, opToStr(ins.op));
         if (isArithmeticIns(&ins)) {
@@ -114,13 +164,52 @@ void ViewModel::updateInst() {
 
     for (; row < m_instModel.rowCount(); row++) {
         for (int col = 0; col < m_instModel.columnCount(); col++) {
-            m_instModel.setItem(row, col, new QStandardItem(QString("")));
+            setInstStr(m_instModel, row, col, "");
         }
     }
 }
 
 void ViewModel::updateRS() {
     // TODO NOW
+}
+
+void ViewModel::updateRegs() {
+    int row = 0;
+    for (auto reg: m_tomasulo.regs) {
+        setInstQStr(m_regsModel, row, 1, QString::number(reg.value, 'e', 4));
+        setInstStr(m_regsModel, row, 2, reg.srcRS == nullptr ? "": reg.srcRS->name);
+        row++;
+    }
+}
+
+void ViewModel::updateLoad() {
+    int row = 0;
+    for (auto&& rs: m_tomasulo.ldManager.rss) {
+        bool noIns = (rs.ins == nullptr);
+        setInstStr(m_loadModel, row, 0, noIns ? "":
+                   std::to_string(rs.ins->timeLeftToFinish));
+        setInstStr(m_loadModel, row, 1, rs.name);
+        setInstStr(m_loadModel, row, 2, noIns ? "": std::to_string(rs.addr));
+        setInstQStr(m_loadModel, row, 3, noIns ? QString(""):
+                    QString::number(rs.desValue, 'e', 4));
+        row++;
+    }
+}
+
+void ViewModel::updateStore() {
+    int row = 0;
+    for (auto&& rs: m_tomasulo.stManager.rss) {
+        bool noIns = (rs.ins == nullptr);
+        setInstStr(m_storeModel, row, 0, noIns ? "":
+                   std::to_string(rs.ins->timeLeftToFinish));
+        setInstStr(m_storeModel, row, 1, rs.name);
+        setInstStr(m_storeModel, row, 2, noIns ? "": std::to_string(rs.addr));
+        setInstQStr(m_storeModel, row, 3, noIns ? QString(""):
+                    (rs.q ? QString::fromStdString(rs.q->name):
+                    QString::number(rs.v, 'e', 4)));
+        row++;
+    }
+    assert(row == INIT_LOAD_ROWS);
 }
 
 void ViewModel::updateStatus() {

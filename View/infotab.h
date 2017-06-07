@@ -19,6 +19,9 @@ public:
 
     void setInstTableModel(QStandardItemModel &model);
     void setRsTableModel(QStandardItemModel &model);
+    void setRegsTableModel(QStandardItemModel &model);
+    void setLoadTableModel(QStandardItemModel &model);
+    void setStoreTableModel(QStandardItemModel &model);
     void setTimeText(const QString &timeText);
     void setPCText(const QString &pcText);
     void setAddText(const QString &addText);
