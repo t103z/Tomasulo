@@ -17,7 +17,14 @@ public:
     explicit InfoTab(QWidget *parent = 0);
     ~InfoTab();
 
-    void SetInstTableModel(QStandardItemModel &model);
+    void setInstTableModel(QStandardItemModel &model);
+    void setRsTableModel(QStandardItemModel &model);
+    void setTimeText(const QString &timeText);
+    void setPCText(const QString &pcText);
+    void setAddText(const QString &addText);
+    void setMulText(const QString &mulText);
+    void setCDBText(const QString &cdbText);
+
 private:
     Ui::InfoTab *ui;
 };

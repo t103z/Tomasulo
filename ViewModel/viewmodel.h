@@ -28,13 +28,19 @@ private:
     std::vector<Ins> &m_inss;
     Tomasulo &m_tomasulo;
 
-    QStandardItemModel &m_instModel;
+    QStandardItemModel &m_instModel;    // 指令序列
+    QStandardItemModel &m_rsModel;      // 保留站
 
     explicit ViewModel(const ViewModel& rhs) = delete;
     ViewModel& operator= (const ViewModel& rhs) = delete;
     void initModel();
+    void initInstModel();
+    void initRsModel();
     void ConnectActions();
     void updateView();
+    void updateInst();
+    void updateStatus();
+    void updateRS();
 };
 
 
