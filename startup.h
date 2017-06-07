@@ -6,6 +6,7 @@ class InfoTab;
 class Tomasulo;
 class Ins;
 class ViewModel;
+class MemTab;
 
 class Startup final : public QObject
 {
@@ -17,6 +18,7 @@ public:
     ~Startup();
 private:
     InfoTab& m_infoTab;
+    MemTab& m_memTab;
     MainView& m_mainView;
     std::vector<Ins> &m_inss;
     Tomasulo& m_tomasulo;

@@ -8,6 +8,7 @@ class MainView;
 }
 
 class InfoTab;
+class MemTab;
 class QFile;
 
 class MainView : public QMainWindow
@@ -15,7 +16,7 @@ class MainView : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainView(QWidget *parent, InfoTab& info);
+    explicit MainView(QWidget *parent, InfoTab& info, MemTab& mem);
     ~MainView();
 
 public slots:
@@ -33,6 +34,7 @@ private slots:
 
 private:
     InfoTab& m_infoTab;
+    MemTab& m_memTab;
     Ui::MainView *ui;
 };
 

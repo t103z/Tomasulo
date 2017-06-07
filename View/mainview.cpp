@@ -1,19 +1,23 @@
 #include "mainview.h"
 #include "ui_mainview.h"
 #include "View/infotab.h"
+#include "View/memtab.h"
 #include <QFileDialog>
 #include <QDir>
 #include <QDebug>
 #include <QMessageBox>
 
-MainView::MainView(QWidget *parent, InfoTab &info) :
+MainView::MainView(QWidget *parent, InfoTab &info, MemTab &mem) :
     QMainWindow(parent),
     m_infoTab(info),
+    m_memTab(mem),
     ui(new Ui::MainView)
 {
     ui->setupUi(this);
     m_infoTab.setParent(this);
+    m_memTab.setParent(this);
     ui->layoutInfo->addWidget(&m_infoTab);
+    ui->layoutMem->addWidget(&m_memTab);
 }
 
 MainView::~MainView()

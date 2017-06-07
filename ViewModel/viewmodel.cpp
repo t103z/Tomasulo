@@ -1,6 +1,7 @@
 #include "viewmodel.h"
 #include "View/mainview.h"
 #include "View/infotab.h"
+#include "View/memtab.h"
 #include "Model/Tomasulo.h"
 #include "Model/Tomasulo/Ins.h"
 #include "Model/Tomasulo/defs.h"
@@ -18,6 +19,9 @@ const int INIT_INST_ROWS = 5;
 const int INIT_INST_COLUMNS = 8;        // 指令 TODO: 最终几列？
 const int INIT_RS_ROWS = 5;
 const int INIT_RS_COLUMNS = 7;          // 保留站
+const int INIT_MEM_ROWS = 20;
+const int INIT_MEM_COLUMNS = 320;
+// 指令序列列号
 const int COL_OPR = 0;
 const int COL_OP1 = COL_OPR + 1;
 const int COL_OP2 = COL_OP1 + 1;
@@ -26,19 +30,30 @@ const int COL_ISSUE = COL_OP3 + 1;
 const int COL_ExSt = COL_ISSUE + 1;
 const int COL_ExFin = COL_ExSt + 1;
 const int COL_Wt = COL_ExFin + 1;
+// 保留站列号
+const int COL_TIME = 0;
+const int COL_NAME = COL_TIME + 1;
+const int COL_BUSY = COL_NAME + 1;
+const int COL_V1 = COL_BUSY + 1;
+const int COL_V2 = COL_V1 + 1;
+const int COL_Q1 = COL_V2 + 1;
+const int COL_Q2 = COL_Q1 + 1;
 
 inline void setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr) {
-    return m_instModel.setItem((r), (c), new QStandardItem(QString::fromStdString((stdStr))));
+//    return m_instModel.setItem((r), (c), new QStandardItem(QString::fromStdString((stdStr))));
+    m_instModel.setData(m_instModel.index(r, c), QString::fromStdString(stdStr));
 }
 
-ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, std::vector<Ins> &inss, Tomasulo &tomasulo) :
+ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab, std::vector<Ins> &inss, Tomasulo &tomasulo) :
     QObject(nullptr),
     m_mainView(mainView),
     m_infoTab(infoTab),
+    m_memTab(memTab),
     m_inss(inss),
     m_tomasulo(tomasulo),
     m_instModel(*new QStandardItemModel(INIT_INST_ROWS, INIT_INST_COLUMNS, this)),
-    m_rsModel(*new QStandardItemModel(INIT_RS_ROWS, INIT_RS_COLUMNS, this))
+    m_rsModel(*new QStandardItemModel(INIT_RS_ROWS, INIT_RS_COLUMNS, this)),
+    m_memModel(*new QStandardItemModel(INIT_MEM_ROWS, INIT_MEM_COLUMNS, this))
 {
     initModel();
     ConnectActions();
@@ -48,6 +63,7 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, std::vector<Ins> &ins
 void ViewModel::initModel() {
     initInstModel();
     initRsModel();
+    initMemModel();
     updateView();
 }
 
@@ -72,6 +88,10 @@ void ViewModel::initRsModel() {
     m_rsModel.setHorizontalHeaderItem(5, new QStandardItem(QString("Q1")));
     m_rsModel.setHorizontalHeaderItem(6, new QStandardItem(QString("Q2")));
     m_infoTab.setRsTableModel(m_rsModel);
+}
+
+void ViewModel::initMemModel() {
+    m_memTab.setMemTableModel(m_memModel);
 }
 
 // 将所有action有关signal连接到slot
@@ -119,8 +139,39 @@ void ViewModel::updateInst() {
     }
 }
 
+// 更新保留站的helper function
+void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row) {
+
+    for (auto && rs : manager.rss) {
+        Ins* ins = rs.ins;
+        bool hasIns = (rs.ins != nullptr);
+        setInstStr(model, row, COL_TIME, hasIns ? std::to_string(ins->timeLeftToFinish): "");
+        setInstStr(model, row, COL_NAME, rs.name);
+        setInstStr(model, row, COL_BUSY, std::to_string(hasIns));
+
+        auto formatDouble = [&hasIns](double n) {
+            if (!hasIns) {
+                return QString("");
+            } else if (n == 0.0) {
+                return QString("0");
+            } else {
+                return QString("%1").arg(n);
+            }
+        };
+
+        model.setItem(row, COL_V1, new QStandardItem(rs.q1 == nullptr ? formatDouble(rs.v1): QString("")));
+        model.setItem(row, COL_V2, new QStandardItem(rs.q2 == nullptr ? formatDouble(rs.v2): QString("")));
+        setInstStr(model, row, COL_Q1, hasIns ? (rs.q1 == nullptr ? "": rs.q1->name): "");
+        setInstStr(model, row, COL_Q2, hasIns ? (rs.q2 == nullptr ? "": rs.q2->name): "");
+        row++;
+    }
+}
+
 void ViewModel::updateRS() {
     // TODO NOW
+    int row = 0;
+    updateRSManager(m_rsModel, m_tomasulo.addManager, row);
+    updateRSManager(m_rsModel, m_tomasulo.mulManager, row);
 }
 
 void ViewModel::updateStatus() {

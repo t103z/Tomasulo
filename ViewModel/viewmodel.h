@@ -3,6 +3,7 @@
 
 class MainView;
 class InfoTab;
+class MemTab;
 class Ins;
 class Tomasulo;
 class QStandardItemModel;
@@ -12,7 +13,7 @@ class ViewModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit ViewModel(MainView &mainView, InfoTab &infoTab, std::vector<Ins> &inss, Tomasulo &tomasulo);
+    explicit ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab, std::vector<Ins> &inss, Tomasulo &tomasulo);
 
 public slots:
     void onNotifyLoadInst(const QFile &fileName);
@@ -25,17 +26,21 @@ signals:
 private:
     MainView &m_mainView;
     InfoTab &m_infoTab;
+    MemTab &m_memTab;
     std::vector<Ins> &m_inss;
     Tomasulo &m_tomasulo;
 
     QStandardItemModel &m_instModel;    // 指令序列
     QStandardItemModel &m_rsModel;      // 保留站
 
+    QStandardItemModel &m_memModel;     // 内存
+
     explicit ViewModel(const ViewModel& rhs) = delete;
     ViewModel& operator= (const ViewModel& rhs) = delete;
     void initModel();
     void initInstModel();
     void initRsModel();
+    void initMemModel();
     void ConnectActions();
     void updateView();
     void updateInst();
