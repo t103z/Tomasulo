@@ -33,6 +33,8 @@ private:
     std::vector<Ins> &m_inss;
     Tomasulo &m_tomasulo;
 
+    bool m_updatingView;
+
     QStandardItemModel &m_instModel;    // 指令序列
     QStandardItemModel &m_rsModel;      // 保留站
     QStandardItemModel &m_regsModel;    // 寄存器信息
