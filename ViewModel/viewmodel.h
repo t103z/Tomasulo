@@ -7,6 +7,7 @@ class MemTab;
 class Ins;
 class Tomasulo;
 class QStandardItemModel;
+class QStandardItem;
 class QFile;
 
 class ViewModel : public QObject
@@ -19,6 +20,7 @@ public slots:
     void onNotifyLoadInst(const QFile &fileName);
     void onNotifyStep();
     void onNotifyClear();
+    void onNotifyMemChanged(QStandardItem *item);
 
 signals:
     void NotifyLoadInstError(const std::vector<int> &lineNums);
@@ -47,14 +49,14 @@ private:
     void initLoadModel();
     void initStoreModel();
     void initMemModel();
-    void ConnectActions();
+    void connectActions();
+    void connectMem();
     void updateView();
     void updateInst();
     void updateStatus();
     void updateRS();
+    void updateMem();
     void updateRegs();
     void updateLoad();
     void updateStore();
 };
-
-
