@@ -54,7 +54,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -78,8 +78,11 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionLoadInst"/>
+   <addaction name="actionBack"/>
    <addaction name="actionStep"/>
    <addaction name="actionMultiStep"/>
+   <addaction name="actionFastFoward"/>
+   <addaction name="actionPlay"/>
    <addaction name="actionClear"/>
    <addaction name="actionAddInst"/>
   </widget>
@@ -140,6 +143,21 @@
   <action name="actionMultiStep">
    <property name="text">
     <string>MultiStep</string>
+   </property>
+  </action>
+  <action name="actionPlay">
+   <property name="text">
+    <string>Play</string>
+   </property>
+  </action>
+  <action name="actionFastFoward">
+   <property name="text">
+    <string>Fast Foward</string>
+   </property>
+  </action>
+  <action name="actionBack">
+   <property name="text">
+    <string>Back</string>
    </property>
   </action>
  </widget>

@@ -12,6 +12,7 @@
 #include <QString>
 #include <QFile>
 #include <QDebug>
+#include <QTimer>
 
 /*********** checklist************
  * 1. 完成单向Model到View的映射   On-going
@@ -27,7 +28,7 @@ const int INIT_REGS_ROWS = 16;
 const int INIT_REGS_COLUMNS = 3;        // 寄存器信息
 const int INIT_LOAD_ROWS = 3;
 const int INIT_LOAD_COLUMNS = 4;        // Load/Store缓冲
-const int INIT_MEM_ROWS = 496;
+const int INIT_MEM_ROWS = 410;
 const int INIT_MEM_COLUMNS = 10;
 // 指令序列列号
 const int COL_OPR = 0;
@@ -47,11 +48,31 @@ const int COL_V2 = COL_V1 + 1;
 const int COL_Q1 = COL_V2 + 1;
 const int COL_Q2 = COL_Q1 + 1;
 
-inline void setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr) {
+void ViewModel::setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr) {
+    auto oldVal = m_instModel.data(m_instModel.index(r, c), Qt::DisplayRole).toString();
+    auto newVal = QString::fromStdString(stdStr);
+    if (m_running && newVal != oldVal) {
+        if (m_instModel.item(r, c)) m_instModel.item(r, c)->setBackground(Qt::yellow);
+    } else {
+        if (m_instModel.item(r, c)) m_instModel.item(r, c)->setBackground(Qt::transparent);
+    }
+    if (!m_running && m_instModel.item(r, c)) {
+        m_instModel.item(r, c)->setBackground(Qt::transparent);
+    }
     m_instModel.setData(m_instModel.index(r, c), QString::fromStdString(stdStr));
+
 }
 
-inline void setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr) {
+void ViewModel::setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr) {
+    auto oldVal = m_instModel.data(m_instModel.index(r, c), Qt::DisplayRole).toString();
+    if (qStr != oldVal) {
+        if (m_instModel.item(r, c)) m_instModel.item(r, c)->setBackground(Qt::yellow);
+    } else {
+        if (m_instModel.item(r, c)) m_instModel.item(r, c)->setBackground(Qt::transparent);
+    }
+    if (!m_running && m_instModel.item(r, c)) {
+        m_instModel.item(r, c)->setBackground(Qt::transparent);
+    }
     m_instModel.setData(m_instModel.index(r, c), qStr);
 }
 
@@ -79,6 +100,7 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab,
     connectActions();
     connectMem();
     connectRegs();
+    setTimer();
 }
 
 // 初始化
@@ -165,7 +187,13 @@ void ViewModel::connectActions() {
     connect(&m_mainView, &MainView::NotifyStep, this, &ViewModel::onNotifyStep);
     connect(&m_mainView, &MainView::NotifyClear, this, &ViewModel::onNotifyClear);
     connect(&m_mainView, &MainView::NotifyAddInst, this, &ViewModel::onNotifyAddInst);
+<<<<<<< HEAD
     connect(&m_mainView, &MainView::NotifyMultiStep, this, &ViewModel::onNotifyMultiStep);
+=======
+    connect(&m_mainView, &MainView::NotifyPlay, this, &ViewModel::onNotifyPlay);
+    connect(&m_mainView, &MainView::NotifyFastFoward, this, &ViewModel::onNotifyFastFoward);
+    connect(&m_mainView, &MainView::NotifyBack, this, &ViewModel::onNotifyBack);
+>>>>>>> zxy
 }
 
 // 将memModel有关signal连接到slot
@@ -180,6 +208,12 @@ void ViewModel::connectMem() {
 // 将regsModel有关signal连接到slot
 void ViewModel::connectRegs() {
     connect(&m_regsModel, &QStandardItemModel::itemChanged, this, &ViewModel::onNotifyRegsChanged);
+}
+
+// 设置计时器
+void ViewModel::setTimer() {
+    m_timer.setInterval(1000);
+    connect(&m_timer, &QTimer::timeout, this, &ViewModel::onNotifyStep);
 }
 
 // 根据Tomasulo类更新前端数据
@@ -233,7 +267,7 @@ void ViewModel::updateInst() {
 }
 
 // 更新保留站的helper function
-void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row) {
+void ViewModel::updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row) {
 
     for (auto && rs : manager.rss) {
         Ins* ins = rs.ins;
@@ -322,12 +356,9 @@ void ViewModel::updateMem() {
 }
 
 void ViewModel::updateAction() {
-    if (m_running) {
-        m_mainView.disableAddInst();
-    }
-    else {
-        m_mainView.enableAddInst();
-    }
+    m_mainView.setEnableAddInst(!m_running);
+    m_mainView.setEnableForward(m_tomasulo.inss.size() > 0 && !m_tomasulo.isAllFinished());
+    m_mainView.setEnableBack(m_tomasulo.inss.size() > 0 && m_tomasulo.timeCounter != 0);
 }
 
 void ViewModel::updateEvents() {
@@ -375,6 +406,22 @@ void ViewModel::onNotifyStep() {
     m_tomasulo.nextTime();
     m_running = true;
     updateView();
+    if (m_tomasulo.isEventHappened()) m_timer.stop();
+}
+
+void ViewModel::onNotifyPlay() {
+    if (m_tomasulo.isAllFinished()) return;
+    m_running = true;
+    m_timer.start();
+}
+
+void ViewModel::onNotifyFastFoward(int steps) {
+    m_running = true;
+    while (steps--) {
+        m_tomasulo.nextTime();
+        if (m_tomasulo.isAllFinished()) break;
+    }
+    updateView();
 }
 
 void ViewModel::onNotifyClear() {
@@ -405,7 +452,6 @@ void ViewModel::onNotifyMemChanged(QStandardItem *item) {
     size_t addr = item->row() * INIT_MEM_COLUMNS + item->column();
     double value = item->data(Qt::DisplayRole).toDouble();
     m_tomasulo.mem.set(addr, value);
-    //assert(m_tomasulo.mem.get(addr) == value);
 }
 
 void ViewModel::onNotifyRegsChanged(QStandardItem *item) {
@@ -423,4 +469,18 @@ void ViewModel::onNotifyModifyMem(int addr, double val) {
     setInstQStr(m_memModel, addr / INIT_MEM_COLUMNS, addr % INIT_MEM_COLUMNS, QString::number(val, 'g', 4));
     m_updatingView = false;
     m_memTab.setTableFocus(m_memModel.index(addr / INIT_MEM_COLUMNS, addr % INIT_MEM_COLUMNS));
+}
+
+void ViewModel::onNotifyBack() {
+    int current = m_tomasulo.timeCounter;
+    if (current == 0) {
+        m_running = false;
+    } else {
+        m_running = true;
+        m_tomasulo.restart();
+        for (int i = 0; i < current - 1; i++) {
+            m_tomasulo.nextTime();
+        }
+    }
+    updateView();
 }

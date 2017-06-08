@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 /*!
  * 操作数类型

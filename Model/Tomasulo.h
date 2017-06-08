@@ -226,22 +226,14 @@ public:
      */
     void reset(){
         inss.clear();
-        for(auto&& r : regs) r.reset();
-        mem.reset();
-        addManager.reset();
-        addNow = nullptr;
-        mulManager.reset();
-        mulNow = nullptr;
-        ldManager.reset();
-        stManager.reset();
-        loadCycleZero = nullptr;
+        _restart();
+    }
 
-        pendingWrite.clear();
-        isMemUsed = false;
-
-        timeCounter = 0;
-        pc = 0;
-        events.clear();
+    void restart(){
+        _restart();
+        for (auto&& ins : inss) {
+            ins.restart();
+        }
     }
 
     /*!
@@ -277,6 +269,17 @@ public:
 
     bool isEventHappened() const {
         return !events.empty();
+    }
+
+    bool isAllFinished() const {
+        bool isFinished = true;
+        for (auto&& ins : inss) {
+            if (ins.writeResultTime == INVALID_TIME) {
+                isFinished = false;
+                break;
+            }
+        }
+        return isFinished;
     }
 
 private:
@@ -338,6 +341,26 @@ private:
     EventCallBack eventCallBack = [this](Event&& event) -> void {
         eventHappen(std::move(event));
     };
+
+    void _restart()
+    {
+        for(auto&& r : regs) r.reset();
+        mem.reset();
+        addManager.reset();
+        addNow = nullptr;
+        mulManager.reset();
+        mulNow = nullptr;
+        ldManager.reset();
+        stManager.reset();
+        loadCycleZero = nullptr;
+
+        pendingWrite.clear();
+        isMemUsed = false;
+
+        timeCounter = 0;
+        pc = 0;
+        events.clear();
+    }
 };
 
 std::ostream& operator<<(std::ostream& out, const Tomasulo& t);
