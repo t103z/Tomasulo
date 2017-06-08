@@ -10,6 +10,8 @@ class Tomasulo;
 class QStandardItemModel;
 class QStandardItem;
 class QFile;
+class QString;
+class RSManager;
 
 class ViewModel : public QObject
 {
@@ -72,4 +74,8 @@ private:
     void updateLoad();
     void updateStore();
     void updateAction();
+
+    void setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr);
+    void setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr);
+    void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row);
 };

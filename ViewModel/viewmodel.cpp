@@ -25,7 +25,7 @@ const int INIT_REGS_ROWS = 16;
 const int INIT_REGS_COLUMNS = 3;        // 寄存器信息
 const int INIT_LOAD_ROWS = 3;
 const int INIT_LOAD_COLUMNS = 4;        // Load/Store缓冲
-const int INIT_MEM_ROWS = 496;
+const int INIT_MEM_ROWS = 410;
 const int INIT_MEM_COLUMNS = 10;
 // 指令序列列号
 const int COL_OPR = 0;
@@ -45,11 +45,25 @@ const int COL_V2 = COL_V1 + 1;
 const int COL_Q1 = COL_V2 + 1;
 const int COL_Q2 = COL_Q1 + 1;
 
-inline void setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr) {
+void ViewModel::setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr) {
+    auto oldVal = m_instModel.data(m_instModel.index(r, c), Qt::DisplayRole).toString();
+    auto newVal = QString::fromStdString(stdStr);
+    if (m_running && newVal != oldVal) {
+        m_instModel.item(r, c)->setBackground(Qt::yellow);
+    } else if (m_running) {
+        m_instModel.item(r, c)->setBackground(Qt::transparent);
+    }
     m_instModel.setData(m_instModel.index(r, c), QString::fromStdString(stdStr));
+
 }
 
-inline void setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr) {
+void ViewModel::setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr) {
+    auto oldVal = m_instModel.data(m_instModel.index(r, c), Qt::DisplayRole).toString();
+    if (qStr != oldVal) {
+        m_instModel.item(r, c)->setBackground(Qt::yellow);
+    } else if (m_running) {
+        m_instModel.item(r, c)->setBackground(Qt::transparent);
+    }
     m_instModel.setData(m_instModel.index(r, c), qStr);
 }
 
@@ -219,7 +233,7 @@ void ViewModel::updateInst() {
 }
 
 // 更新保留站的helper function
-void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row) {
+void ViewModel::updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row) {
 
     for (auto && rs : manager.rss) {
         Ins* ins = rs.ins;
