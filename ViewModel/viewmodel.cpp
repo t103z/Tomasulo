@@ -24,8 +24,8 @@ const int INIT_REGS_ROWS = 16;
 const int INIT_REGS_COLUMNS = 3;        // 寄存器信息
 const int INIT_LOAD_ROWS = 3;
 const int INIT_LOAD_COLUMNS = 4;        // Load/Store缓冲
-const int INIT_MEM_ROWS = 64;
-const int INIT_MEM_COLUMNS = 100;
+const int INIT_MEM_ROWS = 496;
+const int INIT_MEM_COLUMNS = 10;
 // 指令序列列号
 const int COL_OPR = 0;
 const int COL_OP1 = COL_OPR + 1;
@@ -154,6 +154,8 @@ void ViewModel::connectActions() {
 // 将memModel有关signal连接到slot
 void ViewModel::connectMem() {
     connect(&m_memModel, &QStandardItemModel::itemChanged, this, &ViewModel::onNotifyMemChanged);
+    connect(&m_memTab, &MemTab::NotifyCheckMem, this, &ViewModel::onNotifyCheckMem);
+    connect(&m_memTab, &MemTab::NotifyModifyMem, this, &ViewModel::onNotifyModifyMem);
 }
 
 // 根据Tomasulo类更新前端数据
@@ -212,7 +214,7 @@ void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &r
         bool hasIns = (rs.ins != nullptr);
         setInstStr(model, row, COL_TIME, hasIns ? std::to_string(ins->timeLeftToFinish): "");
         setInstStr(model, row, COL_NAME, rs.name);
-        setInstStr(model, row, COL_BUSY, std::to_string(hasIns));
+        setInstStr(model, row, COL_BUSY, hasIns ? "True" : "False");
 
         auto formatDouble = [&hasIns](double n) {
             if (!hasIns) {
@@ -220,12 +222,12 @@ void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &r
             } else if (n == 0.0) {
                 return QString("0");
             } else {
-                return QString("%1").arg(n);
+                return QString::number(n, 'g', 4);
             }
         };
 
-        model.setItem(row, COL_V1, new QStandardItem(rs.q1 == nullptr ? formatDouble(rs.v1): QString("")));
-        model.setItem(row, COL_V2, new QStandardItem(rs.q2 == nullptr ? formatDouble(rs.v2): QString("")));
+        setInstQStr(model, row, COL_V1, rs.q1 == nullptr ? formatDouble(rs.v1) : QString(""));
+        setInstQStr(model, row, COL_V2, rs.q2 == nullptr ? formatDouble(rs.v2) : QString(""));
         setInstStr(model, row, COL_Q1, hasIns ? (rs.q1 == nullptr ? "": rs.q1->name): "");
         setInstStr(model, row, COL_Q2, hasIns ? (rs.q2 == nullptr ? "": rs.q2->name): "");
         row++;
@@ -320,4 +322,16 @@ void ViewModel::onNotifyClear() {
 void ViewModel::onNotifyMemChanged(QStandardItem *item) {
     if (m_updatingView) return;
     m_tomasulo.mem.set(item->row() * INIT_MEM_COLUMNS + item->column(), item->data(Qt::DisplayRole).toDouble());
+}
+
+void ViewModel::onNotifyCheckMem(int addr) {
+    m_memTab.setTableFocus(m_memModel.index(addr / INIT_MEM_COLUMNS, addr % INIT_MEM_COLUMNS));
+}
+
+void ViewModel::onNotifyModifyMem(int addr, double val) {
+    m_tomasulo.mem.set(addr, val);
+    m_updatingView = true;
+    setInstQStr(m_memModel, addr / INIT_MEM_COLUMNS, addr % INIT_MEM_COLUMNS, QString::number(val, 'g', 4));
+    m_updatingView = false;
+    m_memTab.setTableFocus(m_memModel.index(addr / INIT_MEM_COLUMNS, addr % INIT_MEM_COLUMNS));
 }
