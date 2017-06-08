@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include <QTimer>
 
 class MainView;
 class InfoTab;
@@ -30,6 +31,9 @@ public slots:
     void onNotifyRegsChanged(QStandardItem *item);
     void onNotifyCheckMem(int addr);
     void onNotifyModifyMem(int addr, double val);
+    void onNotifyPlay();
+    void onNotifyFastFoward(int steps);
+    void onNotifyBack();
 
 signals:
     void NotifyLoadInstError(const std::vector<int> &lineNums);
@@ -44,6 +48,8 @@ private:
 
     bool m_updatingView;
     bool m_running;
+
+    QTimer m_timer;
 
     QStandardItemModel &m_instModel;    // 指令序列
     QStandardItemModel &m_rsModel;      // 保留站
@@ -65,6 +71,7 @@ private:
     void connectActions();
     void connectMem();
     void connectRegs();
+    void setTimer();
     void updateView();
     void updateInst();
     void updateStatus();
@@ -78,4 +85,5 @@ private:
     void setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr);
     void setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr);
     void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row);
+
 };

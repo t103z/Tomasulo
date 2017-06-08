@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QMessageBox>
+#include <QInputDialog>
 
 MainView::MainView(QWidget *parent, InfoTab &info, MemTab &mem) :
     QMainWindow(parent),
@@ -33,8 +34,7 @@ void MainView::on_actionLoadInst_triggered()
 }
 
 void MainView::onNotifyLoadInstError(const std::vector<int> &lineNums) {
-    QMessageBox msgBox;
-    msgBox.setText("文件中有非法指令！");
+    QMessageBox msgBox{QMessageBox::Critical,"错误", "文件中有非法指令！"};
     QString lineNumString("");
     for (auto lineNum: lineNums) {
         lineNumString.append(QString::number(lineNum) + QString(" "));
@@ -65,4 +65,27 @@ void MainView::disableAddInst() {
 
 void MainView::enableAddInst() {
     ui->actionAddInst->setEnabled(true);
+}
+
+void MainView::on_actionPlay_triggered()
+{
+    emit NotifyPlay();
+}
+
+void MainView::on_actionFastFoward_triggered()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("请输入要执行的步数"), tr("步数:"), QLineEdit::Normal, QString("0"), &ok);
+    QRegExp re("\\d+");
+    if (!re.exactMatch(text)) {
+        QMessageBox msgBox{QMessageBox::Critical, "错误", "输入格式有误"};
+        msgBox.exec();
+        return;
+    }
+    emit NotifyFastFoward(text.toInt());
+}
+
+void MainView::on_actionBack_triggered()
+{
+    emit NotifyBack();
 }

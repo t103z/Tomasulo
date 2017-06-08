@@ -47,6 +47,14 @@ public:
         assert(op == InsOp::LD || op == InsOp::ST);
     }
 
+    void restart(){
+        timeLeftToFinish = INVALID_TIME;
+        issueTime = INVALID_TIME;
+        execStartTime = INVALID_TIME;
+        execFinishTime = INVALID_TIME;
+        writeResultTime = INVALID_TIME;
+    }
+
     /*!
      * 转字符串
      * @return 标准格式字符串
