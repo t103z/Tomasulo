@@ -325,9 +325,13 @@ void ViewModel::onNotifyClear() {
 
 void ViewModel::onNotifyMemChanged(QStandardItem *item) {
     if (m_updatingView) return;
-    m_tomasulo.mem.set(item->row() * INIT_MEM_COLUMNS + item->column(), item->data(Qt::DisplayRole).toDouble());
+    size_t addr = item->row() * INIT_MEM_COLUMNS + item->column();
+    double value = item->data(Qt::DisplayRole).toDouble();
+    m_tomasulo.mem.set(addr, value);
+    //assert(m_tomasulo.mem.get(addr) == value);
 }
 
 void ViewModel::onNotifyRegsChanged(QStandardItem *item) {
-    m_tomasulo.regs.set(item->row(), item->data(Qt::DisplayRole).toDouble());
+    if (m_updatingView) return;
+    m_tomasulo.regs[item->row()].value = item->data(Qt::DisplayRole).toDouble();
 }
