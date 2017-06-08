@@ -339,12 +339,9 @@ void ViewModel::updateMem() {
 }
 
 void ViewModel::updateAction() {
-    if (m_running) {
-        m_mainView.disableAddInst();
-    }
-    else {
-        m_mainView.enableAddInst();
-    }
+    m_mainView.setEnableAddInst(!m_running);
+    m_mainView.setEnableForward(m_tomasulo.inss.size() > 0 && !m_tomasulo.isAllFinished());
+    m_mainView.setEnableBack(m_tomasulo.inss.size() > 0 && m_tomasulo.timeCounter != 0);
 }
 
 // slots

@@ -59,12 +59,24 @@ void MainView::on_actionAddInst_triggered()
     emit NotifyAddInst();
 }
 
-void MainView::disableAddInst() {
-    ui->actionAddInst->setEnabled(false);
+void MainView::setEnableAddInst(bool isEnabled) {
+    ui->actionAddInst->setEnabled(isEnabled);
 }
 
-void MainView::enableAddInst() {
-    ui->actionAddInst->setEnabled(true);
+void MainView::setEnableForward(bool isEnabled) {
+    if (isEnabled) {
+        ui->actionStep->setEnabled(true);
+        ui->actionFastFoward->setEnabled(true);
+        ui->actionPlay->setEnabled(true);
+    } else {
+        ui->actionStep->setEnabled(false);
+        ui->actionFastFoward->setEnabled(false);
+        ui->actionPlay->setEnabled(false);
+    }
+}
+
+void MainView::setEnableBack(bool isEnabled) {
+    ui->actionBack->setEnabled(isEnabled);
 }
 
 void MainView::on_actionPlay_triggered()

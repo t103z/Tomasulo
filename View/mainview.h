@@ -19,8 +19,9 @@ public:
     explicit MainView(QWidget *parent, InfoTab& info, MemTab& mem);
     ~MainView();
 
-    void disableAddInst();
-    void enableAddInst();
+    void setEnableForward(bool isEnabled);          // 使能前进
+    void setEnableBack(bool isEnabled);             // 使能后退
+    void setEnableAddInst(bool isEnabled);          // 使能添加指令
 
 public slots:
     void onNotifyLoadInstError(const std::vector<int> &lineNums);
