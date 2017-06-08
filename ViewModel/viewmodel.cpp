@@ -8,6 +8,7 @@
 #include <QStandardItemModel>
 #include <QString>
 #include <QFile>
+#include <QDebug>
 
 /*********** checklist************
  * 1. 完成单向Model到View的映射   On-going
@@ -19,8 +20,8 @@ const int INIT_INST_ROWS = 5;
 const int INIT_INST_COLUMNS = 8;        // 指令 TODO: 最终几列？
 const int INIT_RS_ROWS = 5;
 const int INIT_RS_COLUMNS = 7;          // 保留站
-const int INIT_MEM_ROWS = 20;
-const int INIT_MEM_COLUMNS = 320;
+const int INIT_MEM_ROWS = 64;
+const int INIT_MEM_COLUMNS = 100;
 // 指令序列列号
 const int COL_OPR = 0;
 const int COL_OP1 = COL_OPR + 1;
@@ -56,7 +57,8 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab, std::
     m_memModel(*new QStandardItemModel(INIT_MEM_ROWS, INIT_MEM_COLUMNS, this))
 {
     initModel();
-    ConnectActions();
+    connectActions();
+    connectMem();
 }
 
 // 初始化
@@ -91,15 +93,26 @@ void ViewModel::initRsModel() {
 }
 
 void ViewModel::initMemModel() {
+    for (int i = 0; i < INIT_MEM_COLUMNS; i++) {
+        m_memModel.setHorizontalHeaderItem(i, new QStandardItem(QString("%1").arg(i)));
+    }
+    for (int i = 0; i < INIT_MEM_ROWS; i++) {
+        m_memModel.setVerticalHeaderItem(i , new QStandardItem(QString("%1").arg(i * INIT_MEM_COLUMNS)));
+    }
     m_memTab.setMemTableModel(m_memModel);
 }
 
 // 将所有action有关signal连接到slot
-void ViewModel::ConnectActions() {
+void ViewModel::connectActions() {
     connect(&m_mainView, &MainView::NotifyLoadInst, this, &ViewModel::onNotifyLoadInst);
     connect(this, &ViewModel::NotifyLoadInstError, &m_mainView, &MainView::onNotifyLoadInstError);
     connect(&m_mainView, &MainView::NotifyStep, this, &ViewModel::onNotifyStep);
     connect(&m_mainView, &MainView::NotifyClear, this, &ViewModel::onNotifyClear);
+}
+
+// 将memModel有关signal连接到slot
+void ViewModel::connectMem() {
+    connect(&m_memModel, &QStandardItemModel::itemChanged, this, &ViewModel::onNotifyMemChanged);
 }
 
 // 根据Tomasulo类更新前端数据
@@ -107,6 +120,7 @@ void ViewModel::updateView() {
     updateInst();
     updateStatus();
     updateRS();
+    updateMem();
 }
 
 void ViewModel::updateInst() {
@@ -182,6 +196,14 @@ void ViewModel::updateStatus() {
     // TODO: CDB?
 }
 
+void ViewModel::updateMem() {
+    for (size_t i = 0; i < m_tomasulo.mem.mem.size(); i++) {
+        size_t row = i / INIT_MEM_COLUMNS;
+        size_t col = i % INIT_MEM_COLUMNS;
+        setInstStr(m_memModel, row, col, std::to_string(m_tomasulo.mem.get(i)));    // TODO: change to QStr API
+    }
+}
+
 // slots
 void ViewModel::onNotifyLoadInst(const QFile &fileName) {
     auto r = Ins::loadInsFromFile(fileName.fileName().toStdString());
@@ -204,5 +226,10 @@ void ViewModel::onNotifyStep() {
 void ViewModel::onNotifyClear() {
     m_tomasulo.reset();
     updateView();
+}
+
+void ViewModel::onNotifyMemChanged(QStandardItem *item) {
+    qDebug() << item->data(Qt::UserRole);
+    m_tomasulo.mem.set(item->row() * INIT_INST_COLUMNS + item->column(), item->data().toDouble());
 }
 
