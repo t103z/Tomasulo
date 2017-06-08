@@ -34,6 +34,9 @@ private:
 
     QStandardItemModel &m_instModel;    // 指令序列
     QStandardItemModel &m_rsModel;      // 保留站
+    QStandardItemModel &m_regsModel;    // 寄存器信息
+    QStandardItemModel &m_loadModel;      // Load缓冲
+    QStandardItemModel &m_storeModel;      // Store缓冲
 
     QStandardItemModel &m_memModel;     // 内存
 
@@ -42,6 +45,9 @@ private:
     void initModel();
     void initInstModel();
     void initRsModel();
+    void initRegsModel();
+    void initLoadModel();
+    void initStoreModel();
     void initMemModel();
     void connectActions();
     void connectMem();
@@ -50,6 +56,7 @@ private:
     void updateStatus();
     void updateRS();
     void updateMem();
+    void updateRegs();
+    void updateLoad();
+    void updateStore();
 };
-
-
