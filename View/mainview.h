@@ -19,6 +19,9 @@ public:
     explicit MainView(QWidget *parent, InfoTab& info, MemTab& mem);
     ~MainView();
 
+    void disableAddInst();
+    void enableAddInst();
+
 public slots:
     void onNotifyLoadInstError(const std::vector<int> &lineNums);
 

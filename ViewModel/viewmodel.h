@@ -41,6 +41,7 @@ private:
     Tomasulo &m_tomasulo;
 
     bool m_updatingView;
+    bool m_running;
 
     QStandardItemModel &m_instModel;    // 指令序列
     QStandardItemModel &m_rsModel;      // 保留站
@@ -70,4 +71,5 @@ private:
     void updateRegs();
     void updateLoad();
     void updateStore();
+    void updateAction();
 };

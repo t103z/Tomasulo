@@ -58,3 +58,11 @@ void MainView::on_actionAddInst_triggered()
 {
     emit NotifyAddInst();
 }
+
+void MainView::disableAddInst() {
+    ui->actionAddInst->setEnabled(false);
+}
+
+void MainView::enableAddInst() {
+    ui->actionAddInst->setEnabled(true);
+}

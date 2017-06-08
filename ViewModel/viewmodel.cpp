@@ -68,7 +68,8 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab,
     m_loadModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this)),
     m_storeModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this)),
     m_memModel(*new QStandardItemModel(INIT_MEM_ROWS, INIT_MEM_COLUMNS, this)),
-    m_updatingView(false)
+    m_updatingView(false),
+    m_running(false)
 {
     initModel();
     connectActions();
@@ -178,6 +179,7 @@ void ViewModel::updateView() {
     updateRegs();
     updateLoad();
     updateStore();
+    updateAction();
     m_updatingView = false;
 }
 
@@ -305,6 +307,15 @@ void ViewModel::updateMem() {
     }
 }
 
+void ViewModel::updateAction() {
+    if (m_running) {
+        m_mainView.disableAddInst();
+    }
+    else {
+        m_mainView.enableAddInst();
+    }
+}
+
 // slots
 void ViewModel::onNotifyLoadInst(const QFile &fileName) {
     auto r = Ins::loadInsFromFile(fileName.fileName().toStdString());
@@ -316,6 +327,7 @@ void ViewModel::onNotifyLoadInst(const QFile &fileName) {
     for (size_t i = 0; i < r.second.size(); i++) {
         m_tomasulo.pushIns(r.second[i]);
     }
+    m_running = false;
     updateView();
 }
 
@@ -332,11 +344,13 @@ void ViewModel::onNotifyAppendInst(const std::string &insStr) {
 
 void ViewModel::onNotifyStep() {
     m_tomasulo.nextTime();
+    m_running = true;
     updateView();
 }
 
 void ViewModel::onNotifyClear() {
     m_tomasulo.reset();
+    m_running = false;
     updateView();
 }
 
