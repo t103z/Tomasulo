@@ -241,7 +241,7 @@ void ViewModel::updateRS() {
 void ViewModel::updateRegs() {
     int row = 0;
     for (auto reg: m_tomasulo.regs) {
-        setInstQStr(m_regsModel, row, 1, QString::number(reg.value, 'e', 4));
+        setInstQStr(m_regsModel, row, 1, QString::number(reg.value, 'g', 4));
         setInstStr(m_regsModel, row, 2, reg.srcRS == nullptr ? "": reg.srcRS->name);
         row++;
     }
@@ -256,7 +256,7 @@ void ViewModel::updateLoad() {
         setInstStr(m_loadModel, row, 1, rs.name);
         setInstStr(m_loadModel, row, 2, noIns ? "": std::to_string(rs.addr));
         setInstQStr(m_loadModel, row, 3, noIns ? QString(""):
-                    QString::number(rs.desValue, 'e', 4));
+                    QString::number(rs.desValue, 'g', 4));
         row++;
     }
 }
@@ -271,7 +271,7 @@ void ViewModel::updateStore() {
         setInstStr(m_storeModel, row, 2, noIns ? "": std::to_string(rs.addr));
         setInstQStr(m_storeModel, row, 3, noIns ? QString(""):
                     (rs.q ? QString::fromStdString(rs.q->name):
-                    QString::number(rs.v, 'e', 4)));
+                    QString::number(rs.v, 'g', 4)));
         row++;
     }
     assert(row == INIT_LOAD_ROWS);
