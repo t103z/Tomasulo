@@ -26,7 +26,6 @@ void Tomasulo::issue() {
     assert(rs && !rs->isBusy);
     rs->reset();
 
-    eventHappen();
     rs->isBusy = true;
     rs->ins = ins;
 
@@ -68,6 +67,7 @@ void Tomasulo::issue() {
         }
     }
 
+    eventHappen(insIssueEvent(rs));
     ++pc;
 }
 
@@ -76,44 +76,42 @@ void Tomasulo::exec() {
     if (addNow != nullptr) {
         Ins* ins = addNow->ins;
         if (ins->timeLeftToFinish == getCycleOfInsOp(ins->op)) {
-            eventHappen();
             ins->execStartTime = timeCounter;
+            eventHappen(insExecStartEvent(addNow));
         }
 
         assert(ins->timeLeftToFinish > 0);
         if (--ins->timeLeftToFinish == 0) {
-            eventHappen();
             ins->execFinishTime = timeCounter;
             addNow->desValue = (addManager.fn)(ins->op, addNow->v1, addNow->v2);
             pendingWrite.push_back(addNow);
 
+            eventHappen(insExecFinishEvent(addNow));
             addNow = nullptr;
         }
     } else {
         addNow = addManager.getAReadyRS();
-        if (addNow) eventHappen();
     }
 
     // muler exec
     if (mulNow != nullptr) {
         Ins* ins = mulNow->ins;
         if (ins->timeLeftToFinish == getCycleOfInsOp(ins->op)) {
-            eventHappen();
             ins->execStartTime = timeCounter;
+            eventHappen(insExecStartEvent(mulNow));
         }
 
         assert(ins->timeLeftToFinish > 0);
         if (--ins->timeLeftToFinish == 0){
-            eventHappen();
             ins->execFinishTime = timeCounter;
             mulNow->desValue = (mulManager.fn)(ins->op, mulNow->v1, mulNow->v2);
             pendingWrite.push_back(mulNow);
 
+            eventHappen(insExecFinishEvent(mulNow));
             mulNow = nullptr;
         }
     } else {
         mulNow = mulManager.getAReadyRS();
-        if (mulNow) eventHappen();
     }
 
     // load exec
@@ -128,9 +126,9 @@ void Tomasulo::exec() {
     if (crs != nullptr) {
         Ins* ins = crs->ins;
 
-        eventHappen();
         ins->execStartTime = timeCounter;
         --ins->timeLeftToFinish;
+        eventHappen(insExecStartEvent(crs));
     }
 
     if (!isMemUsed && mrs && checkLDSTSafe(mrs->ins)) {
@@ -140,11 +138,12 @@ void Tomasulo::exec() {
             --ins->timeLeftToFinish;
             assert(ins->timeLeftToFinish == 0);
 
-            eventHappen();
             ins->execFinishTime = timeCounter;
             mrs->desValue = (ldManager.fn)(ins->op, mrs->addr, 0);
             pendingWrite.push_back(mrs);
 
+            eventHappen(ldInsLoadEvent(mrs));
+            eventHappen(insExecFinishEvent(mrs));
             isMemUsed = true;
         }
     }
@@ -158,18 +157,18 @@ void Tomasulo::exec() {
         --ins->timeLeftToFinish;
         assert(ins->timeLeftToFinish == 0);
 
-        eventHappen();
         ins->execFinishTime = timeCounter;
+        eventHappen(insExecFinishEvent(rs));
     }
 
     // Cycle 0
     if (loadCycleZero) {
         Ins* ins = loadCycleZero->ins;
 
-        eventHappen();
         ins->execStartTime = timeCounter;
         --ins->timeLeftToFinish;
 
+        eventHappen(insExecStartEvent(loadCycleZero));
         loadCycleZero = nullptr;
     } else {
         loadCycleZero = stManager.getARSForCycle(InsOp::ST, 0);
@@ -194,11 +193,12 @@ void Tomasulo::write() {
     if (rs != nullptr && checkLDSTSafe(rs->ins)) {
         Ins* ins = rs->ins;
 
-        eventHappen();
         ins->writeResultTime = timeCounter;
         (stManager.fn)(ins->op, rs->addr, rs->v);
-        rs->reset();
 
+        eventHappen(stInsWriteEvent(rs));
+
+        rs->reset();
         isMemUsed = true;
     }
 
@@ -211,14 +211,14 @@ void Tomasulo::write() {
     size_t choseInd = uid(rd);
 
     // broadcast
-    eventHappen();
     rs = pendingWrite[choseInd];
-    addManager.accept(rs);
-    mulManager.accept(rs);
+    eventHappen(insWriteBackEvent(rs));
+    addManager.accept(rs, eventCallBack);
+    mulManager.accept(rs, eventCallBack);
     for (auto &&r : regs) {
-        r.accept(rs);
+        r.accept(rs, eventCallBack);
     }
-    stManager.accept(rs);
+    stManager.accept(rs, eventCallBack);
 
     rs->ins->writeResultTime = timeCounter;
     rs->reset();
@@ -229,7 +229,7 @@ void Tomasulo::write() {
 void Tomasulo::nextTime() {
     ++timeCounter;
     isMemUsed = false;
-    isEventHappened = false;
+    events.clear();
     write();
     exec();
     issue();
@@ -324,7 +324,10 @@ std::ostream& operator<<(std::ostream& out, const Tomasulo& t) {
     out << endl;
     out << "Adder : " << (t.addNow == nullptr ? "" : t.addNow->name) << endl;
     out << "Muler : " << (t.mulNow == nullptr ? "" : t.mulNow->name) << endl;
-    out << "Event : " << t.isEventHappened << endl;
+    out << "Event : " << endl;
+    for (auto&& event : t.events) {
+        out << "        " << event.description << endl;
+    }
 
     out << "====================================================================" << endl;
 

@@ -53,3 +53,8 @@ void MainView::on_actionClear_triggered()
 {
     emit NotifyClear();
 }
+
+void MainView::on_actionAddInst_triggered()
+{
+    emit NotifyAddInst();
+}

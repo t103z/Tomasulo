@@ -10,6 +10,9 @@
 #include "Tomasulo/Mem.h"
 #include "Tomasulo/ReservationStation.h"
 #include "Tomasulo/Register.h"
+#include "Tomasulo/Event.h"
+
+class Tomasulo;
 
 using calcFn = std::function<double(InsOp, double, double)>;
 
@@ -62,8 +65,8 @@ public:
      * 广播信息处理
      * @param rs 保留站
      */
-    void accept(ReservationStation* rs) {
-        for (auto&& r : rss) r.accept(rs);
+    void accept(ReservationStation* rs, EventCallBack callBack) {
+        for (auto&& r : rss) r.accept(rs, callBack);
     }
 
     std::vector<ReservationStation> rss;            // 保留站
@@ -201,7 +204,7 @@ public:
 
 class Tomasulo {
 public:
-    Tomasulo(const std::vector<Ins>& inss) :
+    Tomasulo(const std::vector<Ins>& inss = std::vector<Ins>{}) :
             addManager(ADDER_SIZE, "Add", addFn),
             mulManager(MULER_SIZE, "Mult", mulFn),
             ldManager(LDBUF_SIZE, "Load", loadFn),
@@ -211,6 +214,10 @@ public:
             inss(inss) {
         for (int i = 0; i < this->inss.size(); ++i) {
             this->inss[i].index = i + 1;
+        }
+
+        for (int i = 0; i < this->regs.size(); ++i) {
+            this->regs[i].index = i;
         }
     }
 
@@ -234,8 +241,7 @@ public:
 
         timeCounter = 0;
         pc = 0;
-        isEventHappened = false;
-        event = Event::MAGIC_EVENT;
+        events.clear();
     }
 
     /*!
@@ -267,8 +273,11 @@ public:
 
     int timeCounter = 0;                                // 计时器
     int pc = 0;                                         // 程序计数器
-    bool isEventHappened = 0;                           // 事件是否发生
-    Event event = Event::MAGIC_EVENT;                   // 事件
+    std::vector<Event> events;                          // 事件
+
+    bool isEventHappened() const {
+        return !events.empty();
+    }
 
 private:
     void issue();
@@ -322,10 +331,13 @@ private:
         return true;
     }
 
-    inline void eventHappen(Event event = Event::MAGIC_EVENT){
-        isEventHappened = true;
-        this->event = event;
+    void eventHappen(Event&& event = Event()){
+        events.push_back(std::move(event));
     }
+
+    EventCallBack eventCallBack = [this](Event&& event) -> void {
+        eventHappen(std::move(event));
+    };
 };
 
 std::ostream& operator<<(std::ostream& out, const Tomasulo& t);

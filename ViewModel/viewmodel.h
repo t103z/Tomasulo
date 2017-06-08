@@ -4,6 +4,7 @@
 class MainView;
 class InfoTab;
 class MemTab;
+class AddInstDialog;
 class Ins;
 class Tomasulo;
 class QStandardItemModel;
@@ -14,12 +15,15 @@ class ViewModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab, std::vector<Ins> &inss, Tomasulo &tomasulo);
+    explicit ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab,
+                       std::vector<Ins> &inss, Tomasulo &tomasulo);
 
 public slots:
     void onNotifyLoadInst(const QFile &fileName);
+    void onNotifyAppendInst(const std::string &insStr);
     void onNotifyStep();
     void onNotifyClear();
+    void onNotifyAddInst();
     void onNotifyMemChanged(QStandardItem *item);
     void onNotifyRegsChanged(QStandardItem *item);
 
@@ -30,6 +34,7 @@ private:
     MainView &m_mainView;
     InfoTab &m_infoTab;
     MemTab &m_memTab;
+    AddInstDialog *m_addInstDialog;
     std::vector<Ins> &m_inss;
     Tomasulo &m_tomasulo;
 

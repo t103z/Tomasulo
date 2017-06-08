@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -109,14 +110,25 @@ pair<bool, Ins> parseInsFromLine(const string& line) {
 }
 
 pair<vector<int>, vector<Ins>> Ins::loadInsFromFile(const string& fname) {
+    ifstream fin(fname);
+    auto&& res = loadIns(fin);
+    fin.close();
+    return res;
+}
+
+std::pair<std::vector<int>, std::vector<Ins>> Ins::loadInsFromString(const std::string &string) {
+    stringstream ss(string);
+    return loadIns(ss);
+}
+
+std::pair<std::vector<int>, std::vector<Ins>> Ins::loadIns(std::istream &in) {
     vector<int> errLine;
     vector<Ins> inss;
-    ifstream fin(fname);
-    if (!fin) return {errLine, inss};
+    if (!in) return {errLine, inss};
 
     string line;
     int n = 0;
-    while (getline(fin, line)) {
+    while (getline(in, line)) {
         ++n;
         auto r = parseInsFromLine(line);
         if (r.first) {
@@ -126,6 +138,5 @@ pair<vector<int>, vector<Ins>> Ins::loadInsFromFile(const string& fname) {
         }
     }
 
-    fin.close();
     return {errLine, inss};
 }

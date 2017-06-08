@@ -8,6 +8,8 @@
  */
 class Register {
 public:
+    int index = INVALID;
+
     double value = 0.0;                     // 寄存器值
     ReservationStation* srcRS = nullptr;    // 保留站表
 
@@ -20,10 +22,11 @@ public:
      * 广播信息处理
      * @param rs 保留站
      */
-    void accept(ReservationStation* rs) {
+    void accept(ReservationStation* rs, EventCallBack callBack) {
         if (srcRS == rs) {
             value = rs->desValue;
             srcRS = nullptr;
+            callBack(broadcastDataReceived(this, rs));
         }
     }
 };

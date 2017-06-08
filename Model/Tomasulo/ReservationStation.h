@@ -3,6 +3,7 @@
 
 #include "defs.h"
 #include "Ins.h"
+#include "Event.h"
 #include <string>
 
 /*!
@@ -43,16 +44,20 @@ public:
      * 广播信息处理
      * @param rs 保留站
      */
-    void accept(ReservationStation* rs) {
+    void accept(ReservationStation* rs, EventCallBack callBack) {
         if (ins == nullptr) return;
+
+        bool isGetData = false;
         if (isArithmeticIns(ins)) {
             if (q1 == rs) {
                 v1 = rs->desValue;
                 q1 = nullptr;
+                isGetData = true;
             }
             if (q2 == rs) {
                 v2 = rs->desValue;
                 q2 = nullptr;
+                isGetData = true;
             }
         } else {
             assert(isMemIns(ins));
@@ -60,9 +65,12 @@ public:
                 if (q == rs){
                     v = rs->desValue;
                     q = nullptr;
+                    isGetData = true;
                 }
             }
         }
+
+        if (isGetData) callBack(broadcastDataReceived(this, rs));
     }
 
     /*!

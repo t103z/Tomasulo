@@ -2,6 +2,7 @@
 #include "View/mainview.h"
 #include "View/infotab.h"
 #include "View/memtab.h"
+#include "View/addinstdialog.h"
 #include "Model/Tomasulo.h"
 #include "Model/Tomasulo/Ins.h"
 #include "Model/Tomasulo/defs.h"
@@ -52,11 +53,13 @@ inline void setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QSt
     m_instModel.setData(m_instModel.index(r, c), qStr);
 }
 
-ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab, std::vector<Ins> &inss, Tomasulo &tomasulo) :
+ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab,
+                     std::vector<Ins> &inss, Tomasulo &tomasulo) :
     QObject(nullptr),
     m_mainView(mainView),
     m_infoTab(infoTab),
     m_memTab(memTab),
+    m_addInstDialog(nullptr),
     m_inss(inss),
     m_tomasulo(tomasulo),
     m_instModel(*new QStandardItemModel(INIT_INST_ROWS, INIT_INST_COLUMNS, this)),
@@ -150,6 +153,7 @@ void ViewModel::connectActions() {
     connect(this, &ViewModel::NotifyLoadInstError, &m_mainView, &MainView::onNotifyLoadInstError);
     connect(&m_mainView, &MainView::NotifyStep, this, &ViewModel::onNotifyStep);
     connect(&m_mainView, &MainView::NotifyClear, this, &ViewModel::onNotifyClear);
+    connect(&m_mainView, &MainView::NotifyAddInst, this, &ViewModel::onNotifyAddInst);
 }
 
 // 将memModel有关signal连接到slot
@@ -313,6 +317,17 @@ void ViewModel::onNotifyLoadInst(const QFile &fileName) {
     updateView();
 }
 
+void ViewModel::onNotifyAppendInst(const std::string &insStr) {
+    auto r = Ins::loadInsFromString(insStr);
+    if (r.first.size()) {
+        emit NotifyLoadInstError(r.first);
+    }
+    for (size_t i = 0; i < r.second.size(); ++i) {
+        m_tomasulo.pushIns(r.second[i]);
+    }
+    updateView();
+}
+
 void ViewModel::onNotifyStep() {
     m_tomasulo.nextTime();
     updateView();
@@ -320,6 +335,16 @@ void ViewModel::onNotifyStep() {
 
 void ViewModel::onNotifyClear() {
     m_tomasulo.reset();
+    updateView();
+}
+
+void ViewModel::onNotifyAddInst() {
+    m_addInstDialog = new AddInstDialog(&m_mainView);
+    connect(m_addInstDialog, &AddInstDialog::NotifyAppendInst, this, &ViewModel::onNotifyAppendInst);
+    m_addInstDialog->exec();
+
+    delete m_addInstDialog;
+    m_addInstDialog = nullptr;
     updateView();
 }
 

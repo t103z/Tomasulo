@@ -67,6 +67,16 @@ public:
      * @return <发生错误的行号（从1开始），正确读入的指令序列>
      */
     static std::pair<std::vector<int>, std::vector<Ins>> loadInsFromFile(const std::string& fname);
+
+    /*!
+     * 从string加载指令序列
+     * @param string
+     * @return <发生错误的行号（从1开始），正确读入的指令序列>
+     */
+    static std::pair<std::vector<int>, std::vector<Ins>> loadInsFromString(const std::string& string);
+
+private:
+    static std::pair<std::vector<int>, std::vector<Ins>> loadIns(std::istream& in);
 };
 
 /*!

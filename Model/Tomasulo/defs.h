@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <string>
 #include <algorithm>
-#include <vector>
+#include <functional>
 
 /*!
  * 操作数类型
@@ -69,14 +69,6 @@ inline std::string opToStr(InsOp op) {
 }
 
 /*!
- * 事件
- */
-enum class Event{
-    MAGIC_EVENT,
-
-};
-
-/*!
  * 无效值
  * 整型均为-1，浮点型无效值仅仅用于初始化
  */
@@ -93,5 +85,8 @@ constexpr std::size_t ADDER_SIZE = 3;
 constexpr std::size_t MULER_SIZE = 2;
 constexpr std::size_t LDBUF_SIZE = 3;
 constexpr std::size_t STBUF_SIZE = 3;
+
+class Event;
+using EventCallBack = std::function<void(Event&&)>;
 
 #endif //TOMASULO_DEFS_H

@@ -5,6 +5,7 @@
 #include "Model/Tomasulo.h"
 #include "Model/Tomasulo/Ins.h"
 #include "ViewModel/viewmodel.h"
+#include "View/addinstdialog.h"
 
 Startup::Startup() :
     QObject(nullptr),
