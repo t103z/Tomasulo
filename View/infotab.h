@@ -29,6 +29,7 @@ public:
     void setAddText(const QString &addText);
     void setMulText(const QString &mulText);
     void setCDBText(const QString &cdbText);
+    void setScrollBar();
 
 private:
     Ui::InfoTab *ui;

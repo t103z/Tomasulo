@@ -90,3 +90,7 @@ void InfoTab::setAddText(const QString &addText) {
 void InfoTab::setMulText(const QString &mulText) {
     ui->textMul->setText(mulText);
 }
+
+void InfoTab::setScrollBar() {
+    ui->listEvents->scrollToBottom();
+}

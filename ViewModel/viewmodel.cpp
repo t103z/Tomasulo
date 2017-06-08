@@ -327,10 +327,11 @@ void ViewModel::updateAction() {
 
 void ViewModel::updateEvents() {
     QStringList &&strList = m_eventsModel.stringList();
-    strList.clear();
     for (Event& e: m_tomasulo.events) {
         strList.push_back(QString::fromStdString(e.description));
     }
+    m_eventsModel.setStringList(strList);
+    m_infoTab.setScrollBar();
 }
 
 // slots
