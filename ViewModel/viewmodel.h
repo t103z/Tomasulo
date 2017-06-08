@@ -5,6 +5,7 @@ class MainView;
 class InfoTab;
 class MemTab;
 class AddInstDialog;
+class MultiStepDialog;
 class Ins;
 class Tomasulo;
 class QStandardItemModel;
@@ -25,6 +26,8 @@ public slots:
     void onNotifyStep();
     void onNotifyClear();
     void onNotifyAddInst();
+    void onNotifyMultiStep();
+    void onNotifyMultiNext(int nIns);
     void onNotifyMemChanged(QStandardItem *item);
     void onNotifyRegsChanged(QStandardItem *item);
     void onNotifyCheckMem(int addr);
@@ -37,7 +40,8 @@ private:
     MainView &m_mainView;
     InfoTab &m_infoTab;
     MemTab &m_memTab;
-    AddInstDialog *m_addInstDialog;
+    AddInstDialog &m_addInstDialog;
+    MultiStepDialog &m_multiStepDialog;
     std::vector<Ins> &m_inss;
     Tomasulo &m_tomasulo;
 

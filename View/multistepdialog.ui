@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AddInstDialog</class>
- <widget class="QDialog" name="AddInstDialog">
+ <class>MultiStepDialog</class>
+ <widget class="QDialog" name="MultiStepDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>109</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>MultiStep</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -25,12 +31,22 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>*请输入指令序列</string>
+        <string>*请输入执行周期数</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit"/>
+      <widget class="QSpinBox" name="spinBox">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei UI</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
@@ -51,7 +67,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>AddInstDialog</receiver>
+   <receiver>MultiStepDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -67,7 +83,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>AddInstDialog</receiver>
+   <receiver>MultiStepDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

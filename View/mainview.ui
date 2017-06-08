@@ -79,6 +79,7 @@
    </attribute>
    <addaction name="actionLoadInst"/>
    <addaction name="actionStep"/>
+   <addaction name="actionMultiStep"/>
    <addaction name="actionClear"/>
    <addaction name="actionAddInst"/>
   </widget>
@@ -134,6 +135,11 @@
      <family>Microsoft YaHei UI</family>
      <pointsize>10</pointsize>
     </font>
+   </property>
+  </action>
+  <action name="actionMultiStep">
+   <property name="text">
+    <string>MultiStep</string>
    </property>
   </action>
  </widget>

@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     ViewModel/viewmodel.cpp \
     View/memtab.cpp \
     View/addinstdialog.cpp \
-    Model/Tomasulo/Event.cpp
+    Model/Tomasulo/Event.cpp \
+    View/multistepdialog.cpp
 
 HEADERS  += View/mainview.h \
     View/infotab.h \
@@ -51,12 +52,14 @@ HEADERS  += View/mainview.h \
     View/memtab.h \
     ViewModel/columnnoedit.h \
     View/addinstdialog.h \
-    Model/Tomasulo/Event.h
+    Model/Tomasulo/Event.h \
+    View/multistepdialog.h
 
 FORMS    += View/mainview.ui \
     View/infotab.ui \
     View/memtab.ui \
-    View/addinstdialog.ui
+    View/addinstdialog.ui \
+    View/multistepdialog.ui
 
 RESOURCES += \
     tomaresource.qrc

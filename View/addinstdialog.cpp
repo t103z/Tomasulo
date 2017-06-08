@@ -19,3 +19,8 @@ void AddInstDialog::on_buttonBox_accepted()
 {
     emit NotifyAppendInst(ui->plainTextEdit->toPlainText().toStdString());
 }
+
+void AddInstDialog::clearText()
+{
+    ui->plainTextEdit->clear();
+}

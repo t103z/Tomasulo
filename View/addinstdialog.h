@@ -15,6 +15,8 @@ public:
     explicit AddInstDialog(QWidget *parent = 0);
     ~AddInstDialog();
 
+    void clearText();
+
 signals:
     void NotifyAppendInst(const std::string &insStr);
 

@@ -3,6 +3,7 @@
 #include "View/infotab.h"
 #include "View/memtab.h"
 #include "View/addinstdialog.h"
+#include "View/multistepdialog.h"
 #include "Model/Tomasulo.h"
 #include "Model/Tomasulo/Ins.h"
 #include "Model/Tomasulo/defs.h"
@@ -60,7 +61,8 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab,
     m_mainView(mainView),
     m_infoTab(infoTab),
     m_memTab(memTab),
-    m_addInstDialog(nullptr),
+    m_addInstDialog(*new AddInstDialog(&m_mainView)),
+    m_multiStepDialog(*new MultiStepDialog(&m_mainView)),
     m_inss(inss),
     m_tomasulo(tomasulo),
     m_instModel(*new QStandardItemModel(INIT_INST_ROWS, INIT_INST_COLUMNS, this)),
@@ -163,6 +165,7 @@ void ViewModel::connectActions() {
     connect(&m_mainView, &MainView::NotifyStep, this, &ViewModel::onNotifyStep);
     connect(&m_mainView, &MainView::NotifyClear, this, &ViewModel::onNotifyClear);
     connect(&m_mainView, &MainView::NotifyAddInst, this, &ViewModel::onNotifyAddInst);
+    connect(&m_mainView, &MainView::NotifyMultiStep, this, &ViewModel::onNotifyMultiStep);
 }
 
 // 将memModel有关signal连接到slot
@@ -170,6 +173,8 @@ void ViewModel::connectMem() {
     connect(&m_memModel, &QStandardItemModel::itemChanged, this, &ViewModel::onNotifyMemChanged);
     connect(&m_memTab, &MemTab::NotifyCheckMem, this, &ViewModel::onNotifyCheckMem);
     connect(&m_memTab, &MemTab::NotifyModifyMem, this, &ViewModel::onNotifyModifyMem);
+    connect(&m_addInstDialog, &AddInstDialog::NotifyAppendInst, this, &ViewModel::onNotifyAppendInst);
+    connect(&m_multiStepDialog, &MultiStepDialog::NotifyMultiNext, this, &ViewModel::onNotifyMultiNext);
 }
 
 // 将regsModel有关signal连接到slot
@@ -373,12 +378,26 @@ void ViewModel::onNotifyClear() {
 }
 
 void ViewModel::onNotifyAddInst() {
-    m_addInstDialog = new AddInstDialog(&m_mainView);
-    connect(m_addInstDialog, &AddInstDialog::NotifyAppendInst, this, &ViewModel::onNotifyAppendInst);
-    m_addInstDialog->exec();
+    m_addInstDialog.exec();
+    m_addInstDialog.clearText();
+    updateView();
+}
 
-    delete m_addInstDialog;
-    m_addInstDialog = nullptr;
+void ViewModel::onNotifyMultiStep() {
+    m_multiStepDialog.exec();
+    updateView();
+}
+
+void ViewModel::onNotifyMultiNext(int nIns) {
+    QStringList &&strList = m_eventsModel.stringList();
+    while (nIns--) {
+        m_tomasulo.nextTime();
+        for (Event& e: m_tomasulo.events) {
+            strList.push_back(QString::fromStdString(e.description));
+        }
+    }
+    m_eventsModel.setStringList(strList);
+    m_infoTab.setScrollBar();
     updateView();
 }
 

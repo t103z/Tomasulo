@@ -59,6 +59,11 @@ void MainView::on_actionAddInst_triggered()
     emit NotifyAddInst();
 }
 
+void MainView::on_actionMultiStep_triggered()
+{
+    emit NotifyMultiStep();
+}
+
 void MainView::disableAddInst() {
     ui->actionAddInst->setEnabled(false);
 }
