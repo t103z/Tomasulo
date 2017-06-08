@@ -64,7 +64,8 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab, std::
     m_regsModel(*new QStandardItemModel(INIT_REGS_ROWS, INIT_REGS_COLUMNS, this)),
     m_loadModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this)),
     m_storeModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this)),
-    m_memModel(*new QStandardItemModel(INIT_MEM_ROWS, INIT_MEM_COLUMNS, this))
+    m_memModel(*new QStandardItemModel(INIT_MEM_ROWS, INIT_MEM_COLUMNS, this)),
+    m_updatingView(false)
 {
     initModel();
     connectActions();
@@ -157,6 +158,7 @@ void ViewModel::connectMem() {
 
 // 根据Tomasulo类更新前端数据
 void ViewModel::updateView() {
+    m_updatingView = true;
     updateInst();
     updateStatus();
     updateRS();
@@ -164,6 +166,7 @@ void ViewModel::updateView() {
     updateRegs();
     updateLoad();
     updateStore();
+    m_updatingView = false;
 }
 
 void ViewModel::updateInst() {
@@ -315,5 +318,6 @@ void ViewModel::onNotifyClear() {
 }
 
 void ViewModel::onNotifyMemChanged(QStandardItem *item) {
+    if (m_updatingView) return;
     m_tomasulo.mem.set(item->row() * INIT_MEM_COLUMNS + item->column(), item->data(Qt::DisplayRole).toDouble());
 }
