@@ -332,8 +332,14 @@ void ViewModel::updateAction() {
 
 void ViewModel::updateEvents() {
     QStringList &&strList = m_eventsModel.stringList();
-    for (Event& e: m_tomasulo.events) {
-        strList.push_back(QString::fromStdString(e.description));
+    if (m_running) {
+        strList.push_back(QString("第%1周期：").arg(m_tomasulo.timeCounter));
+        for (Event& e: m_tomasulo.events) {
+            strList.push_back(QString::fromStdString(e.description));
+        }
+    }
+    else {
+        strList.clear();
     }
     m_eventsModel.setStringList(strList);
     m_infoTab.setScrollBar();
@@ -380,25 +386,18 @@ void ViewModel::onNotifyClear() {
 void ViewModel::onNotifyAddInst() {
     m_addInstDialog.exec();
     m_addInstDialog.clearText();
-    updateView();
 }
 
 void ViewModel::onNotifyMultiStep() {
+    m_running = true;
     m_multiStepDialog.exec();
-    updateView();
 }
 
 void ViewModel::onNotifyMultiNext(int nIns) {
-    QStringList &&strList = m_eventsModel.stringList();
     while (nIns--) {
         m_tomasulo.nextTime();
-        for (Event& e: m_tomasulo.events) {
-            strList.push_back(QString::fromStdString(e.description));
-        }
+        updateView();
     }
-    m_eventsModel.setStringList(strList);
-    m_infoTab.setScrollBar();
-    updateView();
 }
 
 void ViewModel::onNotifyMemChanged(QStandardItem *item) {
