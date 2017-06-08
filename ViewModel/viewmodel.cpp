@@ -230,7 +230,6 @@ void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &r
 }
 
 void ViewModel::updateRS() {
-    // TODO NOW
     int row = 0;
     updateRSManager(m_rsModel, m_tomasulo.addManager, row);
     updateRSManager(m_rsModel, m_tomasulo.mulManager, row);
@@ -316,6 +315,5 @@ void ViewModel::onNotifyClear() {
 }
 
 void ViewModel::onNotifyMemChanged(QStandardItem *item) {
-    qDebug() << item->data(Qt::UserRole);
-    m_tomasulo.mem.set(item->row() * INIT_INST_COLUMNS + item->column(), item->data().toDouble());
+    m_tomasulo.mem.set(item->row() * INIT_MEM_COLUMNS + item->column(), item->data(Qt::DisplayRole).toDouble());
 }
