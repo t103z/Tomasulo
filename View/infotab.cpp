@@ -1,5 +1,6 @@
 #include "infotab.h"
 #include "ui_infotab.h"
+#include "Viewmodel/columnnoedit.h"
 #include <QStandardItemModel>
 
 InfoTab::InfoTab(QWidget *parent) :
@@ -37,12 +38,15 @@ void InfoTab::setRsTableModel(QStandardItemModel &model) {
 
 void InfoTab::setRegsTableModel(QStandardItemModel &model) {
     ui->tableRegs->setModel(&model);
-    ui->tableRegs->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //ui->tableRegs->setEditTriggers(QAbstractItemView::NoEditTriggers);
     for (size_t c = 0; c < ui->tableRegs->horizontalHeader()->count(); ++c)
     {
         ui->tableRegs->horizontalHeader()->setSectionResizeMode(
             c, QHeaderView::Stretch);
     }
+    for (size_t c = 0; c < model.columnCount(); ++c)
+        if (c != 1)
+            ui->tableRegs->setItemDelegateForColumn(c, new NoEditableDelegate(ui->tableRegs));
 }
 
 void InfoTab::setLoadTableModel(QStandardItemModel &model) {

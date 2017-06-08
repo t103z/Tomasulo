@@ -46,7 +46,8 @@ HEADERS  += View/mainview.h \
     Model/Tomasulo/Register.h \
     Model/Tomasulo/ReservationStation.h \
     ViewModel/viewmodel.h \
-    View/memtab.h
+    View/memtab.h \
+    ViewModel/columnnoedit.h
 
 FORMS    += View/mainview.ui \
     View/infotab.ui \
