@@ -21,6 +21,7 @@ public slots:
     void onNotifyStep();
     void onNotifyClear();
     void onNotifyMemChanged(QStandardItem *item);
+    void onNotifyRegsChanged(QStandardItem *item);
 
 signals:
     void NotifyLoadInstError(const std::vector<int> &lineNums);
@@ -51,6 +52,7 @@ private:
     void initMemModel();
     void connectActions();
     void connectMem();
+    void connectRegs();
     void updateView();
     void updateInst();
     void updateStatus();

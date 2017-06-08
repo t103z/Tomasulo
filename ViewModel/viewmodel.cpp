@@ -69,6 +69,7 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab, std::
     initModel();
     connectActions();
     connectMem();
+    connectRegs();
 }
 
 // 初始化
@@ -153,6 +154,11 @@ void ViewModel::connectActions() {
 // 将memModel有关signal连接到slot
 void ViewModel::connectMem() {
     connect(&m_memModel, &QStandardItemModel::itemChanged, this, &ViewModel::onNotifyMemChanged);
+}
+
+// 将regsModel有关signal连接到slot
+void ViewModel::connectRegs() {
+    connect(&m_regsModel, &QStandardItemModel::itemChanged, this, &ViewModel::onNotifyRegsChanged);
 }
 
 // 根据Tomasulo类更新前端数据
@@ -316,4 +322,8 @@ void ViewModel::onNotifyClear() {
 
 void ViewModel::onNotifyMemChanged(QStandardItem *item) {
     m_tomasulo.mem.set(item->row() * INIT_MEM_COLUMNS + item->column(), item->data(Qt::DisplayRole).toDouble());
+}
+
+void ViewModel::onNotifyRegsChanged(QStandardItem *item) {
+    m_tomasulo.regs.set(item->row(), item->data(Qt::DisplayRole).toDouble());
 }
