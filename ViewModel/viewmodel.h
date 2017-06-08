@@ -9,6 +9,7 @@ class Ins;
 class Tomasulo;
 class QStandardItemModel;
 class QStandardItem;
+class QStringListModel;
 class QFile;
 
 class ViewModel : public QObject
@@ -48,8 +49,8 @@ private:
     QStandardItemModel &m_regsModel;    // 寄存器信息
     QStandardItemModel &m_loadModel;      // Load缓冲
     QStandardItemModel &m_storeModel;      // Store缓冲
-
     QStandardItemModel &m_memModel;     // 内存
+    QStringListModel &m_eventsModel;      // 事件列表
 
     explicit ViewModel(const ViewModel& rhs) = delete;
     ViewModel& operator= (const ViewModel& rhs) = delete;
@@ -60,6 +61,7 @@ private:
     void initLoadModel();
     void initStoreModel();
     void initMemModel();
+    void initEventsModel();
     void connectActions();
     void connectMem();
     void connectRegs();
@@ -72,4 +74,5 @@ private:
     void updateLoad();
     void updateStore();
     void updateAction();
+    void updateEvents();
 };

@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QStandardItemModel;
+class QStringListModel;
 
 namespace Ui {
 class InfoTab;
@@ -22,6 +23,7 @@ public:
     void setRegsTableModel(QStandardItemModel &model);
     void setLoadTableModel(QStandardItemModel &model);
     void setStoreTableModel(QStandardItemModel &model);
+    void setEventsTableModel(QStringListModel &model);
     void setTimeText(const QString &timeText);
     void setPCText(const QString &pcText);
     void setAddText(const QString &addText);

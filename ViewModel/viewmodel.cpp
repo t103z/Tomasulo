@@ -7,6 +7,7 @@
 #include "Model/Tomasulo/Ins.h"
 #include "Model/Tomasulo/defs.h"
 #include <QStandardItemModel>
+#include <QStringListModel>
 #include <QString>
 #include <QFile>
 #include <QDebug>
@@ -68,6 +69,7 @@ ViewModel::ViewModel(MainView &mainView, InfoTab &infoTab, MemTab &memTab,
     m_loadModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this)),
     m_storeModel(*new QStandardItemModel(INIT_LOAD_ROWS, INIT_LOAD_COLUMNS, this)),
     m_memModel(*new QStandardItemModel(INIT_MEM_ROWS, INIT_MEM_COLUMNS, this)),
+    m_eventsModel(*new QStringListModel(QStringList(), this)),
     m_updatingView(false),
     m_running(false)
 {
@@ -85,6 +87,7 @@ void ViewModel::initModel() {
     initLoadModel();
     initStoreModel();
     initMemModel();
+    initEventsModel();
     updateView();
 }
 
@@ -148,6 +151,11 @@ void ViewModel::initMemModel() {
     m_memTab.setMemTableModel(m_memModel);
 }
 
+void ViewModel::initEventsModel() {
+    m_eventsModel.stringList().clear();
+    m_infoTab.setEventsTableModel(m_eventsModel);
+}
+
 // 将所有action有关signal连接到slot
 void ViewModel::connectActions() {
     connect(&m_mainView, &MainView::NotifyLoadInst, this, &ViewModel::onNotifyLoadInst);
@@ -180,6 +188,7 @@ void ViewModel::updateView() {
     updateLoad();
     updateStore();
     updateAction();
+    updateEvents();
     m_updatingView = false;
 }
 
@@ -313,6 +322,14 @@ void ViewModel::updateAction() {
     }
     else {
         m_mainView.enableAddInst();
+    }
+}
+
+void ViewModel::updateEvents() {
+    QStringList &&strList = m_eventsModel.stringList();
+    strList.clear();
+    for (Event& e: m_tomasulo.events) {
+        strList.push_back(QString::fromStdString(e.description));
     }
 }
 

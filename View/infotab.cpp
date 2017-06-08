@@ -2,6 +2,7 @@
 #include "ui_infotab.h"
 #include "Viewmodel/columnnoedit.h"
 #include <QStandardItemModel>
+#include <QStringListModel>
 
 InfoTab::InfoTab(QWidget *parent) :
     QWidget(parent),
@@ -69,6 +70,11 @@ void InfoTab::setStoreTableModel(QStandardItemModel &model) {
     }
 }
 
+void InfoTab::setEventsTableModel(QStringListModel &model) {
+    ui->listEvents->setModel(&model);
+    ui->listEvents->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
 void InfoTab::setTimeText(const QString &timeText) {
     ui->textTime->setText(timeText);
 }
@@ -83,8 +89,4 @@ void InfoTab::setAddText(const QString &addText) {
 
 void InfoTab::setMulText(const QString &mulText) {
     ui->textMul->setText(mulText);
-}
-
-void InfoTab::setCDBText(const QString &cdbText) {
-    ui->textCDB->setText(cdbText);
 }
