@@ -116,21 +116,21 @@ void ViewModel::initModel() {
 }
 
 void ViewModel::initInstModel() {
-    m_instModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Type")));
-    m_instModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Dst/Reg")));
-    m_instModel.setHorizontalHeaderItem(2, new QStandardItem(QString("Src1/Addr")));
-    m_instModel.setHorizontalHeaderItem(3, new QStandardItem(QString("Src2")));
-    m_instModel.setHorizontalHeaderItem(4, new QStandardItem(QString("Issue")));
-    m_instModel.setHorizontalHeaderItem(5, new QStandardItem(QString("Ex/Start")));
-    m_instModel.setHorizontalHeaderItem(6, new QStandardItem(QString("Ex/Finish")));
-    m_instModel.setHorizontalHeaderItem(7, new QStandardItem(QString("Wt")));
+    m_instModel.setHorizontalHeaderItem(0, new QStandardItem(QString("类型")));
+    m_instModel.setHorizontalHeaderItem(1, new QStandardItem(QString("目标地址")));
+    m_instModel.setHorizontalHeaderItem(2, new QStandardItem(QString("源地址1")));
+    m_instModel.setHorizontalHeaderItem(3, new QStandardItem(QString("源地址2")));
+    m_instModel.setHorizontalHeaderItem(4, new QStandardItem(QString("发射")));
+    m_instModel.setHorizontalHeaderItem(5, new QStandardItem(QString("运算开始")));
+    m_instModel.setHorizontalHeaderItem(6, new QStandardItem(QString("运算结束")));
+    m_instModel.setHorizontalHeaderItem(7, new QStandardItem(QString("写回")));
     m_infoTab.setInstTableModel(m_instModel);
 }
 
 void ViewModel::initRsModel() {
-    m_rsModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Time")));
-    m_rsModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Name")));
-    m_rsModel.setHorizontalHeaderItem(2, new QStandardItem(QString("Busy")));
+    m_rsModel.setHorizontalHeaderItem(0, new QStandardItem(QString("时间")));
+    m_rsModel.setHorizontalHeaderItem(1, new QStandardItem(QString("名称")));
+    m_rsModel.setHorizontalHeaderItem(2, new QStandardItem(QString("工作中")));
     m_rsModel.setHorizontalHeaderItem(3, new QStandardItem(QString("V1")));
     m_rsModel.setHorizontalHeaderItem(4, new QStandardItem(QString("V2")));
     m_rsModel.setHorizontalHeaderItem(5, new QStandardItem(QString("Q1")));
@@ -139,9 +139,9 @@ void ViewModel::initRsModel() {
 }
 
 void ViewModel::initRegsModel() {
-    m_regsModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Name")));
-    m_regsModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Value")));
-    m_regsModel.setHorizontalHeaderItem(2, new QStandardItem(QString("RS")));
+    m_regsModel.setHorizontalHeaderItem(0, new QStandardItem(QString("名称")));
+    m_regsModel.setHorizontalHeaderItem(1, new QStandardItem(QString("数值")));
+    m_regsModel.setHorizontalHeaderItem(2, new QStandardItem(QString("保留站")));
     for (int i = 0; i < INIT_REGS_ROWS; ++i) {
         m_regsModel.setItem(i, 0, new QStandardItem(QString("F%1").arg(i)));
         m_regsModel.setItem(i, 1, new QStandardItem(QString("0")));
@@ -150,18 +150,18 @@ void ViewModel::initRegsModel() {
 }
 
 void ViewModel::initLoadModel() {
-    m_loadModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Time")));
-    m_loadModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Name")));
-    m_loadModel.setHorizontalHeaderItem(2, new QStandardItem(QString("Address")));
-    m_loadModel.setHorizontalHeaderItem(3, new QStandardItem(QString("Value")));
+    m_loadModel.setHorizontalHeaderItem(0, new QStandardItem(QString("时间")));
+    m_loadModel.setHorizontalHeaderItem(1, new QStandardItem(QString("名称")));
+    m_loadModel.setHorizontalHeaderItem(2, new QStandardItem(QString("地址")));
+    m_loadModel.setHorizontalHeaderItem(3, new QStandardItem(QString("数值")));
     m_infoTab.setLoadTableModel(m_loadModel);
 }
 
 void ViewModel::initStoreModel() {
-    m_storeModel.setHorizontalHeaderItem(0, new QStandardItem(QString("Time")));
-    m_storeModel.setHorizontalHeaderItem(1, new QStandardItem(QString("Name")));
-    m_storeModel.setHorizontalHeaderItem(2, new QStandardItem(QString("Address")));
-    m_storeModel.setHorizontalHeaderItem(3, new QStandardItem(QString("Value")));
+    m_storeModel.setHorizontalHeaderItem(0, new QStandardItem(QString("时间")));
+    m_storeModel.setHorizontalHeaderItem(1, new QStandardItem(QString("名称")));
+    m_storeModel.setHorizontalHeaderItem(2, new QStandardItem(QString("地址")));
+    m_storeModel.setHorizontalHeaderItem(3, new QStandardItem(QString("数值")));
     m_infoTab.setStoreTableModel(m_storeModel);
 }
 
@@ -187,13 +187,11 @@ void ViewModel::connectActions() {
     connect(&m_mainView, &MainView::NotifyStep, this, &ViewModel::onNotifyStep);
     connect(&m_mainView, &MainView::NotifyClear, this, &ViewModel::onNotifyClear);
     connect(&m_mainView, &MainView::NotifyAddInst, this, &ViewModel::onNotifyAddInst);
-<<<<<<< HEAD
     connect(&m_mainView, &MainView::NotifyMultiStep, this, &ViewModel::onNotifyMultiStep);
-=======
     connect(&m_mainView, &MainView::NotifyPlay, this, &ViewModel::onNotifyPlay);
     connect(&m_mainView, &MainView::NotifyFastFoward, this, &ViewModel::onNotifyFastFoward);
     connect(&m_mainView, &MainView::NotifyBack, this, &ViewModel::onNotifyBack);
->>>>>>> zxy
+    connect(&m_mainView, &MainView::NotifyRestart, this, &ViewModel::onNotifyRestart);
 }
 
 // 将memModel有关signal连接到slot
@@ -406,7 +404,7 @@ void ViewModel::onNotifyStep() {
     m_tomasulo.nextTime();
     m_running = true;
     updateView();
-    if (m_tomasulo.isEventHappened()) m_timer.stop();
+    if (m_tomasulo.isAllFinished()) m_timer.stop();
 }
 
 void ViewModel::onNotifyPlay() {
@@ -482,5 +480,11 @@ void ViewModel::onNotifyBack() {
             m_tomasulo.nextTime();
         }
     }
+    updateView();
+}
+
+void ViewModel::onNotifyRestart() {
+    m_running = false;
+    m_tomasulo.restart();
     updateView();
 }

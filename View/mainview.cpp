@@ -29,7 +29,7 @@ MainView::~MainView()
 // slots
 void MainView::on_actionLoadInst_triggered()
 {
-    auto fileName = QFileDialog::getOpenFileName(this, tr("Open Instruction FIle"), QDir::currentPath());
+    auto fileName = QFileDialog::getOpenFileName(this, tr("打开指令文本文件"), QDir::currentPath());
     emit NotifyLoadInst(fileName);
 }
 
@@ -69,15 +69,9 @@ void MainView::setEnableAddInst(bool isEnabled) {
 }
 
 void MainView::setEnableForward(bool isEnabled) {
-    if (isEnabled) {
-        ui->actionStep->setEnabled(true);
-        ui->actionFastFoward->setEnabled(true);
-        ui->actionPlay->setEnabled(true);
-    } else {
-        ui->actionStep->setEnabled(false);
-        ui->actionFastFoward->setEnabled(false);
-        ui->actionPlay->setEnabled(false);
-    }
+    ui->actionStep->setEnabled(isEnabled);
+    ui->actionMultiStep->setEnabled(isEnabled);
+    ui->actionPlay->setEnabled(isEnabled);
 }
 
 void MainView::setEnableBack(bool isEnabled) {
@@ -105,4 +99,9 @@ void MainView::on_actionFastFoward_triggered()
 void MainView::on_actionBack_triggered()
 {
     emit NotifyBack();
+}
+
+void MainView::on_actionRestart_triggered()
+{
+    emit NotifyRestart();
 }

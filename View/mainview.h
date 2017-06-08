@@ -35,6 +35,7 @@ signals:
     void NotifyPlay();                              // 连续执行
     void NotifyFastFoward(int steps);               // 多步执行
     void NotifyBack();                              // 后退
+    void NotifyRestart();                           // 重新开始
 
 private slots:
     void on_actionLoadInst_triggered();
@@ -45,6 +46,7 @@ private slots:
     void on_actionPlay_triggered();
     void on_actionFastFoward_triggered();
     void on_actionBack_triggered();
+    void on_actionRestart_triggered();
 
 private:
     InfoTab& m_infoTab;

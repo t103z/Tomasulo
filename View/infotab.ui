@@ -63,7 +63,7 @@
        <item>
         <widget class="QGroupBox" name="groupRS">
          <property name="title">
-          <string>Reservation Stations</string>
+          <string>保留站</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
@@ -86,7 +86,7 @@
          <item>
           <widget class="QGroupBox" name="groupLQ">
            <property name="title">
-            <string>Load Queue</string>
+            <string>Load指令队列</string>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_12">
             <item>
@@ -107,7 +107,7 @@
          <item>
           <widget class="QGroupBox" name="groupSQ">
            <property name="title">
-            <string>Store Queue</string>
+            <string>Store指令队列</string>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_13">
             <item>
@@ -207,7 +207,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;时间&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>
@@ -331,7 +331,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ALU: add&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;加法器&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>
@@ -396,7 +396,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ALU: mul&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;乘法器&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>

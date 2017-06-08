@@ -2,5 +2,13 @@
     <qresource prefix="/root">
         <file>Img/tiramisu.ico</file>
         <file>Img/cake.png</file>
+        <file>Img/add.png</file>
+        <file>Img/back.png</file>
+        <file>Img/clear.png</file>
+        <file>Img/multistep.png</file>
+        <file>Img/open.png</file>
+        <file>Img/play.png</file>
+        <file>Img/restart.png</file>
+        <file>Img/step.png</file>
     </qresource>
 </RCC>

@@ -38,6 +38,7 @@ public slots:
     void onNotifyPlay();
     void onNotifyFastFoward(int steps);
     void onNotifyBack();
+    void onNotifyRestart();
 
 signals:
     void NotifyLoadInstError(const std::vector<int> &lineNums);
@@ -87,13 +88,9 @@ private:
     void updateLoad();
     void updateStore();
     void updateAction();
-<<<<<<< HEAD
     void updateEvents();
-=======
 
     void setInstStr(QStandardItemModel &m_instModel, int r, int c, const std::string &stdStr);
     void setInstQStr(QStandardItemModel &m_instModel, int r, int c, const QString &qStr);
     void updateRSManager(QStandardItemModel &model, const RSManager &manager, int &row);
-
->>>>>>> zxy
 };

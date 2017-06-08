@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Tomasulo Simulator</string>
+   <string>Tomasulo 模拟器</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../tomaresource.qrc">
@@ -54,7 +54,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
@@ -78,21 +78,24 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionLoadInst"/>
+   <addaction name="actionAddInst"/>
+   <addaction name="separator"/>
    <addaction name="actionBack"/>
    <addaction name="actionStep"/>
    <addaction name="actionMultiStep"/>
-   <addaction name="actionFastFoward"/>
    <addaction name="actionPlay"/>
+   <addaction name="separator"/>
+   <addaction name="actionRestart"/>
    <addaction name="actionClear"/>
-   <addaction name="actionAddInst"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadInst">
-   <property name="text">
-    <string>LoadInst</string>
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/open.png</normaloff>:/root/Img/open.png</iconset>
    </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Load instructions from file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <property name="text">
+    <string>加载指令</string>
    </property>
    <property name="font">
     <font>
@@ -102,11 +105,12 @@
    </property>
   </action>
   <action name="actionStep">
-   <property name="text">
-    <string>Step</string>
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/step.png</normaloff>:/root/Img/step.png</iconset>
    </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Step forward a instruction&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <property name="text">
+    <string>单步前进</string>
    </property>
    <property name="font">
     <font>
@@ -116,8 +120,12 @@
    </property>
   </action>
   <action name="actionClear">
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/clear.png</normaloff>:/root/Img/clear.png</iconset>
+   </property>
    <property name="text">
-    <string>Clear</string>
+    <string>重置</string>
    </property>
    <property name="toolTip">
     <string>清零</string>
@@ -130,8 +138,12 @@
    </property>
   </action>
   <action name="actionAddInst">
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/add.png</normaloff>:/root/Img/add.png</iconset>
+   </property>
    <property name="text">
-    <string>AddInst</string>
+    <string>添加指令</string>
    </property>
    <property name="font">
     <font>
@@ -141,13 +153,21 @@
    </property>
   </action>
   <action name="actionMultiStep">
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/multistep.png</normaloff>:/root/Img/multistep.png</iconset>
+   </property>
    <property name="text">
-    <string>MultiStep</string>
+    <string>多步前进</string>
    </property>
   </action>
   <action name="actionPlay">
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/play.png</normaloff>:/root/Img/play.png</iconset>
+   </property>
    <property name="text">
-    <string>Play</string>
+    <string>自动运行</string>
    </property>
   </action>
   <action name="actionFastFoward">
@@ -156,8 +176,21 @@
    </property>
   </action>
   <action name="actionBack">
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/back.png</normaloff>:/root/Img/back.png</iconset>
+   </property>
    <property name="text">
-    <string>Back</string>
+    <string>单步后退</string>
+   </property>
+  </action>
+  <action name="actionRestart">
+   <property name="icon">
+    <iconset resource="../tomaresource.qrc">
+     <normaloff>:/root/Img/restart.png</normaloff>:/root/Img/restart.png</iconset>
+   </property>
+   <property name="text">
+    <string>重新开始</string>
    </property>
   </action>
  </widget>

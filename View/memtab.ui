@@ -175,10 +175,8 @@
          <item>
           <widget class="QLabel" name="labelBase">
            <property name="text">
-            <string>B
-A
-S
-E</string>
+            <string>基
+址</string>
            </property>
           </widget>
          </item>
@@ -187,7 +185,7 @@ E</string>
            <item>
             <widget class="QLabel" name="labelOffset">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;OFFSET&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;偏移量&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
