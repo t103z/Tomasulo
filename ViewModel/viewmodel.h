@@ -26,6 +26,8 @@ public slots:
     void onNotifyAddInst();
     void onNotifyMemChanged(QStandardItem *item);
     void onNotifyRegsChanged(QStandardItem *item);
+    void onNotifyCheckMem(int addr);
+    void onNotifyModifyMem(int addr, double val);
 
 signals:
     void NotifyLoadInstError(const std::vector<int> &lineNums);

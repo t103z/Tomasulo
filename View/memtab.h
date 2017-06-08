@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QStandardItemModel;
+class QModelIndex;
 
 namespace Ui {
 class MemTab;
@@ -17,6 +18,15 @@ public:
     explicit MemTab(QWidget *parent = 0);
     ~MemTab();
     void setMemTableModel(QStandardItemModel &model);
+    void setTableFocus(const QModelIndex &index);
+
+signals:
+    void NotifyCheckMem(int addr);
+    void NotifyModifyMem(int addr, double val);
+
+private slots:
+    void onCheckMem();
+    void onModifyMem();
 
 private:
     Ui::MemTab *ui;
